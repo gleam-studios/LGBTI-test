@@ -118,7 +118,7 @@ export default async function ResultPage({
   const supportLabel = locale === "zh" ? "支持资源" : "Support";
 
   return (
-    <div className="mx-auto w-full max-w-[1180px] px-6 py-5 sm:px-10 sm:py-7 lg:px-12">
+    <div className="mx-auto w-full max-w-[1400px] px-6 py-5 sm:px-10 sm:py-7 lg:px-16">
       <JsonLd data={jsonLd} />
 
       <nav className="text-xs">
