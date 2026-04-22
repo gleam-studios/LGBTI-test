@@ -82,6 +82,84 @@ export function ShareSheet({
     return raw || fallback;
   };
 
+  /** 截图前等 <img> 解码，避免 toPng 时人格图未就绪；部分线上网络略慢时尤其明显 */
+  const ensureCaptureImagesReady = async (root: Element) => {
+    const imgs = Array.from(root.querySelectorAll("img"));
+    await Promise.all(
+      imgs.map((img) => {
+        const ready = img.complete
+          ? Promise.resolve()
+          : new Promise<void>((r) => {
+              img.addEventListener("load", () => r(), { once: true });
+              img.addEventListener("error", () => r(), { once: true });
+              window.setTimeout(() => r(), 4_000);
+            });
+        return ready.then(() => {
+          if (img.decode) {
+            return img.decode().catch(() => undefined);
+          }
+        });
+      }),
+    );
+  };
+
+  /**
+   * WebKit / Safari 下 html-to-image 在 clone 后对 img 的 fetch+内联常失败，导出图里人物为空白；Chrome 正常。
+   * 将同源图先预转成 data:，让库走 isDataUrl 跳过重抓；截图后还原 src。
+   */
+  const inlineSameOriginImgsToDataUrl = async (
+    root: HTMLElement,
+  ): Promise<() => void> => {
+    const undos: Array<() => void> = [];
+    for (const el of Array.from(root.querySelectorAll<HTMLImageElement>("img"))) {
+      const href = (el.currentSrc || el.getAttribute("src") || "").trim();
+      if (!href || href.startsWith("data:")) continue;
+      let url: URL;
+      try {
+        url = new URL(href, location.href);
+      } catch {
+        continue;
+      }
+      if (url.origin !== location.origin) continue;
+      try {
+        const res = await fetch(url.toString(), {
+          mode: "same-origin",
+          credentials: "same-origin",
+          cache: "force-cache",
+        });
+        if (!res.ok) continue;
+        const blob = await res.blob();
+        const data = await new Promise<string>((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onloadend = () => {
+            if (typeof fr.result === "string") resolve(fr.result);
+            else reject(new Error("readAsDataURL"));
+          };
+          fr.onerror = () => reject(new Error("FileReader"));
+          fr.readAsDataURL(blob);
+        });
+        const srcAttr = el.getAttribute("src");
+        const srcsetAttr = el.getAttribute("srcset");
+        if (srcsetAttr) el.removeAttribute("srcset");
+        el.setAttribute("src", data);
+        undos.push(() => {
+          if (srcsetAttr) el.setAttribute("srcset", srcsetAttr);
+          else el.removeAttribute("srcset");
+          if (srcAttr) el.setAttribute("src", srcAttr);
+          else el.removeAttribute("src");
+        });
+      } catch {
+        // 保留原图
+      }
+    }
+    if (undos.length === 0) {
+      return () => undefined;
+    }
+    return () => {
+      for (const u of undos) u();
+    };
+  };
+
   const downloadPageAsImage = async () => {
     const target = document.getElementById("result-capture");
     if (!target) throw new Error("no capture target");
@@ -96,28 +174,52 @@ export function ShareSheet({
     const width = Math.ceil(rect.width) + padX * 2;
     const height = Math.ceil(rect.height) + padY * 2;
 
-    const dataUrl = await toPng(target, {
-      pixelRatio: 2,
-      cacheBust: true,
-      backgroundColor: bg,
-      width,
-      height,
-      canvasWidth: width,
-      canvasHeight: height,
-      style: {
-        margin: "0",
-        padding: `${padY}px ${padX}px`,
-        boxSizing: "border-box",
-        width: `${width}px`,
-        minHeight: `${height}px`,
-        background: bg,
-      },
-      filter: (node) => {
-        if (!(node instanceof HTMLElement)) return true;
-        if (node.hasAttribute("data-html2img-ignore")) return false;
-        return true;
-      },
-    });
+    await ensureCaptureImagesReady(target);
+    const restoreInlined = await inlineSameOriginImgsToDataUrl(target);
+    await ensureCaptureImagesReady(target);
+
+    const ua = window.navigator.userAgent;
+    // Chromium 系 UA 常带 `Safari/` 兼容串；仅对真 Safari / iOS 网页视图略过字体内嵌
+    const skipFontsForWebKit =
+      /iPhone|iPad|iPod/i.test(ua) ||
+      (/\bSafari\//.test(ua) &&
+        !/\b(Chrome|Chromium|CriOS|FxiOS|EdgA|Edg)\//.test(ua));
+
+    let dataUrl: string;
+    try {
+      dataUrl = await toPng(target, {
+        pixelRatio: 2,
+        // 勿开 cacheBust：会对 /public 静态图追加 ?t= 再 fetch；部分线上 CDN/静态
+        // 对带 query 的 URL 返回 404，html-to-image 内联失败，导出图里人物等变空白
+        cacheBust: false,
+        // WebKit 下注入字体子流程易失败，略过可显著稳定 Safari 导出
+        skipFonts: skipFontsForWebKit,
+        backgroundColor: bg,
+        width,
+        height,
+        canvasWidth: width,
+        canvasHeight: height,
+        style: {
+          margin: "0",
+          padding: `${padY}px ${padX}px`,
+          boxSizing: "border-box",
+          width: `${width}px`,
+          minHeight: `${height}px`,
+          background: bg,
+        },
+        filter: (node) => {
+          if (!(node instanceof HTMLElement)) return true;
+          if (node.hasAttribute("data-html2img-ignore")) return false;
+          return true;
+        },
+      });
+    } finally {
+      try {
+        restoreInlined();
+      } catch {
+        // noop
+      }
+    }
 
     const a = document.createElement("a");
     a.href = dataUrl;
