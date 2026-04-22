@@ -161,7 +161,7 @@ export function ShareSheet({
     const iconHit =
       "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-0 bg-transparent p-0 shadow-none transition duration-200 hover:scale-110 active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)]";
     return (
-      <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-4 sm:min-h-[240px] sm:gap-5">
+      <div className="flex w-full min-h-[200px] flex-col items-center justify-center gap-4 sm:min-h-[240px] sm:gap-5 lg:min-h-0">
         {/* 人格卡片：主 CTA */}
         <button
           type="button"

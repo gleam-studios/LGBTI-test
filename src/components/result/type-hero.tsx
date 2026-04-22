@@ -60,8 +60,8 @@ export async function TypeHero({
         </div>
       )}
 
-      {/* Hero row: figure 带柔光 + 大字标题 */}
-      <div className="mt-5 grid gap-6 sm:mt-7 sm:grid-cols-[180px_1fr] sm:items-center sm:gap-10 md:grid-cols-[220px_1fr]">
+      {/* Hero row: figure 带柔光 + 大字标题。split 时宽度由 result 页外包层 max-w-4xl 控制，避免与 1fr 侧栏同误伤 */}
+      <div className="mt-5 grid w-full gap-6 sm:mt-7 sm:grid-cols-[180px_1fr] sm:items-center sm:gap-10 md:grid-cols-[220px_1fr]">
         <div className="relative mx-auto flex aspect-square w-36 items-center justify-center sm:mx-0 sm:w-44 md:w-56">
           {/* 背后 persona 色光晕 */}
           <div

@@ -131,33 +131,28 @@ export default async function ResultPage({
         </Link>
       </nav>
 
-      {/* 结果页主要内容（可截图区域） */}
+      {/* 结果页主要内容（可截图区域；返回在区域外不进入海报） */}
       <div id="result-capture" data-capture-root>
-
-      {/* 1. 结果 + 右栏：上为「重新测试 / 支持」，下为分享模块（下载 + 图标） */}
-      <div className="mt-5 grid gap-6 sm:mt-6 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-stretch lg:gap-6 xl:grid-cols-[minmax(0,1fr)_16.5rem]">
-        <div className="min-w-0">
+      {/* 1. 人格主卡 + 右栏。勿用 1fr 拉满左列——会把分享区顶到最右、中间大空白、translate 完全看不出 */}
+      <div className="mt-4 flex w-full max-w-full flex-col gap-6 sm:mt-5 lg:w-fit lg:max-w-full lg:flex-row lg:items-stretch lg:gap-5 xl:gap-6 2xl:gap-6">
+        <div className="min-w-0 w-full max-w-4xl shrink-0">
           <Reveal>
             <TypeHero persona={persona} locale={locale} variant="split" />
           </Reveal>
         </div>
-        <aside
-          data-html2img-ignore
-          className="flex min-h-0 min-w-0 flex-col self-stretch px-1.5 sm:px-2 lg:pt-1"
-          aria-label={`${t("resultActions")} · ${t("shareAside")}`}
-        >
+        <aside className="mx-auto flex min-h-0 w-full min-w-0 max-w-sm flex-col self-stretch overflow-x-clip sm:max-w-none lg:mx-0 lg:w-[16.5rem] lg:min-w-[16.5rem] lg:max-w-[16.5rem] xl:min-w-[18rem] xl:max-w-[18rem] 2xl:min-w-[19.5rem] 2xl:max-w-[19.5rem]">
           <nav
-            className="mb-4 w-full min-w-0 max-w-full shrink-0 sm:mb-5"
+            className="mb-2.5 w-full min-w-0 shrink-0 sm:mb-3"
             aria-label={t("resultActions")}
           >
-            <div className="flex w-full min-w-0 max-w-full flex-nowrap items-center gap-x-1.5 sm:gap-x-2">
+            <div className="flex w-full min-w-0 flex-wrap items-center justify-end gap-x-1.5 gap-y-1 sm:gap-x-2 md:gap-x-2.5">
               <Link
                 href={{ pathname: "/test", query: { restart: "1" } }}
-                className="group flex min-w-0 flex-1 items-center gap-1 text-[color:var(--text)] transition-colors hover:text-[color:var(--accent-strong)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)] sm:gap-1.5"
+                className="group inline-flex min-w-0 max-w-full items-center gap-1 text-[color:var(--text)] transition-colors hover:text-[color:var(--accent-strong)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)] sm:gap-1.5"
               >
                 <RefreshCw className="h-3 w-3 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-90 sm:h-3.5 sm:w-3.5" />
-                <span className="relative min-w-0 flex-1 font-display text-[14px] italic sm:text-[15px]">
-                  <span className="block truncate">{t("retake")}</span>
+                <span className="relative whitespace-nowrap font-display text-[13px] italic sm:text-[14px] sm:leading-tight">
+                  {t("retake")}
                   <span
                     aria-hidden
                     className="absolute -bottom-0.5 left-0 right-0 block h-px origin-left scale-x-0 bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
@@ -166,18 +161,18 @@ export default async function ResultPage({
                 <ArrowRight className="h-3 w-3 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 sm:h-3.5 sm:w-3.5" />
               </Link>
               <span
-                className="shrink-0 text-[color:var(--line)]"
+                className="shrink-0 self-center text-[10px] text-[color:var(--line)] sm:translate-y-px sm:text-[11px]"
                 aria-hidden
               >
                 |
               </span>
               <Link
                 href="/support"
-                className="group flex min-w-0 flex-1 items-center gap-1 text-[color:var(--accent-strong)] transition-colors hover:text-[color:var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)] sm:gap-1.5"
+                className="group inline-flex min-w-0 max-w-full items-center gap-1 text-[color:var(--accent-strong)] transition-colors hover:text-[color:var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)] sm:gap-1.5"
               >
                 <Heart className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
-                <span className="relative min-w-0 flex-1 font-display text-[14px] italic sm:text-[15px]">
-                  <span className="block truncate">{supportLabel}</span>
+                <span className="relative whitespace-nowrap font-display text-[13px] italic sm:text-[14px] sm:leading-tight">
+                  {supportLabel}
                   <span
                     aria-hidden
                     className="absolute -bottom-0.5 left-0 right-0 block h-px origin-left scale-x-0 bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
@@ -187,7 +182,11 @@ export default async function ResultPage({
               </Link>
             </div>
           </nav>
-          <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-start overflow-x-clip pt-0.5">
+          <div
+            className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-center pt-8 pb-0.5"
+            data-html2img-ignore
+            aria-label={t("shareAside")}
+          >
             <ShareSheet
               code={code}
               title={name}
