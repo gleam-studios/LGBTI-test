@@ -135,7 +135,7 @@ export default async function ResultPage({
       <div id="result-capture" data-capture-root>
 
       {/* 1. 结果 + 右栏：上为「重新测试 / 支持」，下为分享模块（下载 + 图标） */}
-      <div className="mt-5 grid gap-6 sm:mt-6 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-stretch lg:gap-6 xl:grid-cols-[minmax(0,1fr)_16.5rem]">
+      <div className="mt-5 grid gap-6 sm:mt-6 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-stretch lg:gap-5 xl:grid-cols-[minmax(0,1fr)_16.5rem]">
         <div className="min-w-0">
           <Reveal>
             <TypeHero persona={persona} locale={locale} variant="split" />
@@ -143,7 +143,7 @@ export default async function ResultPage({
         </div>
         <aside
           data-html2img-ignore
-          className="flex min-h-0 min-w-0 flex-col self-stretch px-1.5 sm:px-2 lg:pt-1"
+          className="flex min-h-0 min-w-0 flex-col self-stretch px-1.5 sm:px-2 lg:pl-0 lg:pr-2.5 lg:pt-1 xl:mr-1.5"
           aria-label={`${t("resultActions")} · ${t("shareAside")}`}
         >
           <nav
