@@ -208,7 +208,7 @@ export default async function ResultPage({
       </section>
 
       {/* 3. 四维度分析 | 与你最接近 — 同一起始线并排 */}
-      <div className="mt-8 grid gap-8 border-t border-[color:var(--line)]/60 pt-8 sm:mt-9 sm:gap-9 sm:pt-9 lg:grid-cols-[minmax(0,1fr)_17.5rem] lg:items-start lg:gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="mt-8 grid gap-8 border-t border-[color:var(--line)]/60 pt-8 sm:mt-9 sm:gap-9 sm:pt-9 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-8 xl:grid-cols-[minmax(0,1fr)_25rem]">
         <section className="min-w-0">
           <SectionEyebrow>{t("dimsTitle")}</SectionEyebrow>
           <div className="mt-4 grid gap-x-8 gap-y-5 sm:grid-cols-2 sm:gap-y-6 md:gap-x-10">

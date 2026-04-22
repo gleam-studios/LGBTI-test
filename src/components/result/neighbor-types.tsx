@@ -44,7 +44,7 @@ export async function NeighborTypes({
           <li key={nc}>
             <Link
               href={`/result/${nc}`}
-              className="group relative flex items-center gap-3.5 py-2.5 pl-4 pr-2 transition-[transform,background-color] duration-300 hover:translate-x-0.5"
+              className="group relative flex items-start gap-3 py-2.5 pl-4 pr-1 sm:pr-2 transition-[transform,background-color] duration-300 hover:translate-x-0.5"
             >
               <span
                 aria-hidden
@@ -67,27 +67,27 @@ export async function NeighborTypes({
                 />
               </div>
 
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 pr-0.5">
                 <p
-                  className="font-mono text-[10.5px] tracking-[0.24em]"
+                  className="font-mono text-[10.5px] tracking-[0.2em] sm:tracking-[0.24em]"
                   style={{ color: p.hue.to }}
                 >
                   {nc}
                 </p>
-                <p className="truncate text-[14px] font-semibold text-[color:var(--text)] transition-colors duration-300 group-hover:text-[color:var(--accent-strong)]">
+                <p className="line-clamp-2 text-[14px] font-semibold leading-snug text-[color:var(--text)] transition-colors duration-300 group-hover:text-[color:var(--accent-strong)]">
                   {name}
                 </p>
               </div>
 
-              <div className="flex shrink-0 flex-col items-end gap-0.5 pl-1 text-right">
+              <div className="ml-auto flex min-w-0 max-w-[11.5rem] shrink-0 flex-col items-end gap-0.5 pl-1 text-right">
                 <span
-                  className="font-mono text-[10.5px] tracking-widest"
+                  className="font-mono text-[10.5px] tabular-nums tracking-widest"
                   style={{ color: p.hue.to }}
                 >
                   {flippedLetter}
                 </span>
-                <span className="text-[10.5px] italic text-[color:var(--text-muted)]">
-                  {locale === "zh" ? `${dimName} · ${flippedLabel}` : `${dimName} · ${flippedLabel}`}
+                <span className="hyphens-auto break-words text-[10px] italic leading-snug text-[color:var(--text-muted)] sm:text-[10.5px]">
+                  {dimName} · {flippedLabel}
                 </span>
               </div>
             </Link>
