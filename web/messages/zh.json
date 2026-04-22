@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "title": "彩虹电梯测试",
+    "description": "四个维度，40 道题，测出你在 LGBTQ+ 光谱上到底是哪种生物。16 种结果，没有一种正常。"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于",
+    "support": "支持资源",
+    "toggleLang": "English",
+    "toggleTheme": "切换主题"
+  },
+  "intro": {
+    "eyebrow": "彩虹电梯测试 · Rainbow Elevator",
+    "title": "MBTI 已经过时，<br/><span class=\"rainbow-text\">彩虹电梯</span>来了。",
+    "sub": "四个维度，40 道题，测出你在 LGBTQ+ 光谱上到底是哪种生物。结果有 16 种，没有一种正常。",
+    "straight": "直人也欢迎。这个测试专为 LGBTQ+ 社群设计，但如果你是顺性别异性恋，来看看自己在哪些维度上意外出格。",
+    "cta": "开始测试",
+    "social": "已有 {count} 人完成测试",
+    "scroll": "向下了解四个维度"
+  },
+  "dims": {
+    "CR": { "name": "性别表达方式", "summary": "你的打扮在多大程度上踩进或踩出了社会性别规范。" },
+    "OM": { "name": "吸引性别范围", "summary": "你被一种性别吸引，还是在多种性别之间流动。" },
+    "SA": { "name": "欲望类型", "summary": "你对性的需求强度，从炽烈到无性谱系。" },
+    "GP": { "name": "关系结构", "summary": "你习惯一对一的专注，还是多元并行的网络。" }
+  },
+  "test": {
+    "progress": "{done} / {total}",
+    "hint": "全选完才会放行。你都这么勇敢了，做个题怕什么。",
+    "hintDone": "全部答完。现在把你的彩虹灵魂交给结果页审判。",
+    "back": "上一题",
+    "skip": "跳过",
+    "submit": "查看结果",
+    "questionLabel": "第 {index} 题",
+    "optionHint": "按 1 / 2 / 3 选择，← / → 切换题目",
+    "resuming": "检测到之前的答题进度，已恢复。",
+    "restart": "重新开始"
+  },
+  "result": {
+    "kicker": "你的人格类型",
+    "match": "四维度已锁定",
+    "analysis": "该人格的简单解读",
+    "dimsTitle": "四维度分析",
+    "neighbors": "与你最接近的另外四种",
+    "noteTitle": "友情提示",
+    "note": "本测试仅供娱乐和自我探索，不代表任何医学、心理学或诊断依据。LGBTQ+ 身份是复杂而美丽的，没有任何测试能完全定义你。🏳️‍🌈",
+    "saveTitle": "保存你的结果",
+    "save": "想保存结果？截图或长按屏幕即可保存。分享给朋友看看他们是什么类型。",
+    "shareTitle": "把你的结果分享出去",
+    "shareAside": "分享",
+    "share": {
+      "copy": "复制链接",
+      "copied": "已复制！",
+      "x": "分享到 X",
+      "rednote": "分享到小红书",
+      "discord": "分享到 Discord",
+      "telegram": "分享到 Telegram",
+      "instagram": "分享到 Instagram",
+      "instagramHint": "复制分享内容后，在新标签中打开 Instagram（在 App 内可粘贴）",
+      "downloadImage": "保存结果",
+      "downloadImageLoading": "正在生成…",
+      "downloadImageSuccess": "下载已开始",
+      "downloadImageError": "直接下载未成功，已在新窗口打开，可长按图片保存。"
+    },
+    "resultActions": "结果页操作",
+    "adLabel": "广告",
+    "adDevPlaceholder": "开发环境预览：配置环境变量后将显示 Google AdSense 自适应广告。",
+    "retake": "重新测试",
+    "home": "回到首页",
+    "authorTitle": "作者的话",
+    "authorExpand": "展开 / Expand",
+    "authorCollapse": "收起 / Collapse",
+    "authorP1": "这个测试是为 LGBTQ+ 社群设计的自我探索工具，也是一个幽默的破冰游戏。四个维度分别对应身份认同的核心议题，不代表任何医学或心理学判断。",
+    "authorP2": "如果你觉得某个结果不准，那很正常——人比标签复杂多了。如果你正在探索自己的身份认同，建议寻找社群支持或专业咨询。🏳️‍🌈",
+    "kofi": "请作者喝杯奶茶",
+    "supportCta": "正在经历身份困惑？查看社群与心理支持资源 →"
+  },
+  "footer": {
+    "disclaimer": "娱乐测试 · 非医学或诊断依据 · 严禁用于歧视",
+    "privacy": "隐私政策",
+    "about": "关于测试",
+    "support": "支持资源",
+    "madeWith": "为每一个彩虹灵魂而造"
+  },
+  "common": {
+    "language": "语言",
+    "theme": "主题",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统",
+    "loading": "加载中…",
+    "notFoundTitle": "这里是一片彩虹之外的空白",
+    "notFoundDesc": "你寻找的页面不存在或已被移动。",
+    "backHome": "回到首页"
+  }
+}

@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Light: cool neutral, no green cast — rainbow only in accents + bar */
+  --bg: #f4f3f7;
+  --bg-soft: #ebe9f1;
+  --panel: #ffffff;
+  --panel-raised: #fbfbfe;
+  --text: #13141a;
+  --text-muted: #6b6a78;
+  --line: #e0dee8;
+
+  /* Primary: deep violet (pairs with rainbow strip, not competing with it) */
+  --accent: #6d5fcc;
+  --accent-strong: #5548a8;
+  --accent-contrast: #ffffff;
+
+  /* Rainbow (dimension-coded) */
+  --r1: #ff6b6b; /* CR */
+  --r2: #ff9f43; /* OM */
+  --r3: #ffd93d;
+  --r4: #6bcb77; /* SA */
+  --r5: #4d96ff; /* GP */
+  --r6: #c77dff;
+
+  --shadow-card: 0 16px 48px rgba(20, 18, 40, 0.09);
+  --shadow-float: 0 24px 60px rgba(20, 18, 40, 0.12);
+  /* 多层极淡阴影，整体更“飘”、对比更低 */
+  --shadow-card-soft:
+    0 1px 2px rgba(15, 12, 35, 0.025),
+    0 2px 10px rgba(15, 12, 35, 0.028),
+    0 6px 22px rgba(15, 12, 35, 0.032),
+    0 16px 44px rgba(15, 12, 35, 0.036),
+    0 32px 72px rgba(15, 12, 35, 0.032);
+  /* 题卡背后柔光（配合 blur，无矩形硬边） */
+  --card-ambient-core: rgba(15, 12, 35, 0.1);
+  --card-ambient-mid: rgba(15, 12, 35, 0.035);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  --font-display:
+    var(--next-font-display), var(--next-font-cjk-display), "PP Editorial New",
+    ui-serif, Georgia, "LXGW WenKai", "Noto Serif SC", serif;
+  --font-sans:
+    var(--next-font-sans), var(--next-font-cjk-sans), "Inter",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.dark {
+  /* Dark: near-black with blue-slate cast — CTA stays vivid for WCAG on buttons */
+  --bg: #050508;
+  --bg-soft: #0c0b12;
+  --panel: #0f0e16;
+  --panel-raised: #13121c;
+  --text: #eceaf4;
+  --text-muted: #8f8ba3;
+  --line: #25242f;
+
+  --accent: #8b7fd8;
+  --accent-strong: #6a5ed4;
+  --accent-contrast: #ffffff;
+
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --shadow-float: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --shadow-card-soft:
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 2px 10px rgba(0, 0, 0, 0.14),
+    0 6px 24px rgba(0, 0, 0, 0.18),
+    0 16px 48px rgba(0, 0, 0, 0.2),
+    0 32px 76px rgba(0, 0, 0, 0.22);
+  --card-ambient-core: rgba(0, 0, 0, 0.32);
+  --card-ambient-mid: rgba(0, 0, 0, 0.12);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-panel: var(--panel);
+  --color-panel-raised: var(--panel-raised);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-r1: var(--r1);
+  --color-r2: var(--r2);
+  --color-r3: var(--r3);
+  --color-r4: var(--r4);
+  --color-r5: var(--r5);
+  --color-r6: var(--r6);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-lg: var(--radius-lg);
+  --radius-md: var(--radius-md);
+  --radius-sm: var(--radius-sm);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-float: var(--shadow-float);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-attachment: fixed;
+}
+
+/* Light: soft mist — very subtle indigo + rose (theme-aligned, not green) */
+html:not(.dark) body {
+  background-image:
+    radial-gradient(
+      ellipse 100% 80% at 50% -15%,
+      color-mix(in oklab, var(--r5) 14%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 0% 100%,
+      color-mix(in oklab, var(--r1) 8%, transparent),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 45% at 100% 90%,
+      color-mix(in oklab, var(--r6) 10%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(165deg, #f0eef6 0%, #f4f3f7 50%, #eeecf4 100%);
+}
+
+/* Dark: premium layered night — indigo + violet + subtle warmth (rainbow, muted) */
+html.dark body {
+  background-color: #030305;
+  background-image:
+    radial-gradient(
+      ellipse 120% 90% at 50% -25%,
+      color-mix(in oklab, var(--r6) 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 90% 70% at 100% 0%,
+      color-mix(in oklab, var(--r5) 16%, transparent),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 0% 100%,
+      color-mix(in oklab, var(--r1) 10%, transparent),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 100% 75%,
+      color-mix(in oklab, var(--r2) 8%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      #06050c 0%,
+      #080714 32%,
+      #05050a 68%,
+      #020204 100%
+    );
+  color-scheme: dark;
+}
+
+html:not(.dark) {
+  color-scheme: light;
+}
+
+/* rainbow utilities */
+.rainbow-bar {
+  background: linear-gradient(
+    90deg,
+    var(--r1),
+    var(--r2),
+    var(--r3),
+    var(--r4),
+    var(--r5),
+    var(--r6)
+  );
+}
+
+.rainbow-text {
+  background: linear-gradient(
+    90deg,
+    var(--r1),
+    var(--r2),
+    var(--r4),
+    var(--r5),
+    var(--r6)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Selection */
+::selection {
+  background: color-mix(in oklab, var(--accent-strong) 32%, transparent);
+  color: var(--text);
+}

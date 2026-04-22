@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>彩虹电梯测试 · Rainbow Elevator</title>
+  <style>
+:root {
+  --bg:#f6faf6;--panel:#fff;--text:#1e2a22;--muted:#6a786f;
+  --line:#dbe8dd;--soft:#edf6ef;--accent:#6c8d71;--accent-strong:#4d6a53;
+  --shadow:0 16px 40px rgba(47,73,55,.08);--radius:22px;
+  --r1:#ff6b6b;--r2:#ff9f43;--r3:#ffd93d;--r4:#6bcb77;--r5:#4d96ff;--r6:#c77dff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+    "Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:radial-gradient(circle at top left,#f8fff8 0,#f6faf6 36%,#f2f7f3 100%);
+  color:var(--text);min-height:100vh
+}
+/* rainbow top stripe */
+.rainbow-stripe{
+  height:4px;
+  background:linear-gradient(90deg,var(--r1),var(--r2),var(--r3),var(--r4),var(--r5),var(--r6));
+  position:fixed;top:0;left:0;right:0;z-index:200
+}
+/* lang toggle */
+.lang-bar{position:fixed;top:10px;right:14px;z-index:300;display:flex;gap:6px}
+.lang-btn{
+  padding:5px 13px;border-radius:999px;border:1px solid var(--line);
+  background:var(--panel);color:var(--muted);font-size:12px;
+  cursor:pointer;transition:.15s;font-family:inherit;
+}
+.lang-btn.active{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong)}
+/* shell & card */
+.shell{max-width:980px;margin:0 auto;padding:32px 16px 56px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+/* hero */
+.hero{padding:28px;margin-top:20px;overflow:hidden;position:relative}
+.hero::after{
+  content:"";position:absolute;right:-60px;top:-60px;
+  width:180px;height:180px;border-radius:50%;
+  background:linear-gradient(180deg,rgba(127,165,134,.18),rgba(127,165,134,.02));
+  pointer-events:none
+}
+.hero-minimal{
+  min-height:46vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;padding:42px 20px
+}
+.hero-minimal::after{display:none}
+.hero-minimal h1{max-width:none;margin:0}
+h1,h2,h3,p{margin:0}
+.hero h1{font-size:clamp(28px,5vw,52px);line-height:1.08;letter-spacing:-.03em}
+.hero .sub{margin-top:14px;color:var(--muted);font-size:15px;line-height:1.75;max-width:580px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;font-size:12px;
+  color:var(--accent-strong);border:1px solid var(--line);background:var(--soft);
+  border-radius:999px;padding:8px 14px;margin-bottom:16px
+}
+.straight-note{
+  margin-top:14px;padding:10px 18px;border-radius:12px;
+  background:rgba(108,141,113,.08);border:1px solid rgba(108,141,113,.2);
+  color:var(--accent-strong);font-size:13px;line-height:1.7;max-width:580px
+}
+.dim-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.dim-chip{
+  padding:6px 14px;border-radius:999px;border:1px solid var(--line);
+  background:var(--soft);color:var(--muted);font-size:13px
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.hero-actions-center{justify-content:center;margin-top:28px}
+/* social */
+.social-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px}
+.social-btn{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 16px;
+  border-radius:999px;border:1px solid var(--line);background:var(--soft);
+  color:var(--muted);font-size:13px;cursor:pointer;text-decoration:none;
+  font-family:inherit;transition:border-color .15s,color .15s
+}
+.social-btn:hover{border-color:var(--accent);color:var(--accent-strong)}
+.social-btn svg{width:16px;height:16px;flex-shrink:0}
+/* ko-fi */
+.kofi-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 22px;
+  border-radius:14px;background:#ff5e5b;color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;text-decoration:none;border:none;font-family:inherit;
+  box-shadow:0 8px 24px rgba(255,94,91,.25);transition:transform .15s,box-shadow .15s
+}
+.kofi-btn:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(255,94,91,.32)}
+/* buttons */
+button{border:0;cursor:pointer;transition:transform .16s,box-shadow .16s,opacity .16s;font:inherit}
+button:hover{transform:translateY(-1px)}
+button:disabled{cursor:not-allowed;opacity:.55;transform:none}
+.btn-primary{
+  background:var(--accent-strong);color:#fff;padding:14px 20px;
+  border-radius:14px;box-shadow:0 12px 30px rgba(77,106,83,.18);font-weight:700
+}
+.btn-secondary{
+  background:#fff;color:var(--accent-strong);padding:14px 20px;
+  border-radius:14px;border:1px solid var(--line);font-weight:700
+}
+/* ad slot */
+.ad-slot{
+  border:1px dashed var(--line);border-radius:var(--radius);padding:14px;
+  text-align:center;color:var(--muted);font-size:12px;background:var(--soft);
+  min-height:90px;display:flex;align-items:center;justify-content:center;margin-top:18px
+}
+/* screens */
+.screen{display:none}.screen.active{display:block}
+/* test */
+.test-wrap,.result-wrap{margin-top:22px;padding:22px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.progress{flex:1;min-width:240px;height:10px;background:#edf3ee;border-radius:999px;overflow:hidden}
+.progress>span{
+  display:block;width:0;height:100%;
+  background:linear-gradient(90deg,#97b59c,#5b7a62);
+  border-radius:inherit;transition:width .22s
+}
+.progress-text{color:var(--muted);font-size:13px;white-space:nowrap}
+.question-list{display:grid;gap:16px}
+.question{
+  border:1px solid var(--line);border-radius:18px;padding:18px;
+  background:linear-gradient(180deg,#fff,#fbfdfb);transition:border-color .2s
+}
+.question.answered{border-color:rgba(77,106,83,.4)}
+.question-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;margin-bottom:10px;color:var(--muted);font-size:12px
+}
+.badge{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;
+  padding:6px 10px;background:var(--soft);border:1px solid var(--line)
+}
+.question-title{font-size:16px;line-height:1.7}
+.q-en{display:block;font-size:12px;color:var(--muted);margin-top:3px;font-style:italic;line-height:1.5}
+.options{display:grid;gap:10px;margin-top:14px}
+.option{
+  display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:14px;
+  border:1px solid var(--line);background:#fff;cursor:pointer;
+  transition:border-color .16s,background .16s
+}
+.option:hover{border-color:#bcd0c1;background:#f8fcf9}
+.option.selected{border-color:var(--accent-strong);background:var(--soft)}
+.option input{margin-top:3px;accent-color:var(--accent-strong);transform:scale(1.1);flex-shrink:0}
+.option-code{font-weight:800;color:var(--accent-strong);min-width:22px}
+.option-text{font-size:14px;line-height:1.65}
+.o-en{display:block;font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
+.actions-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:6px
+}
+.hint{color:var(--muted);font-size:13px;line-height:1.7}
+/* result */
+.result-layout{display:grid;gap:18px}
+.result-top{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px;align-items:stretch}
+.poster-box,.type-box,.analysis-box,.dim-box,.note-box{
+  border:1px solid var(--line);border-radius:18px;padding:18px;
+  background:linear-gradient(180deg,#fff,#fbfdfb)
+}
+.poster-box{
+  display:flex;flex-direction:column;min-height:280px;overflow:hidden;position:relative;
+  background:radial-gradient(circle at top right,rgba(127,165,134,.16),rgba(127,165,134,0) 40%),
+    linear-gradient(180deg,#fff,#f7fbf8)
+}
+.poster-box::after{
+  content:"";position:absolute;right:-46px;bottom:-46px;
+  width:140px;height:140px;border-radius:50%;
+  background:linear-gradient(180deg,rgba(127,165,134,.12),rgba(127,165,134,.01));
+  pointer-events:none
+}
+.poster-figure{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1
+}
+.poster-figure svg{width:160px;height:200px}
+.poster-caption{
+  margin-top:14px;color:var(--muted);font-size:14px;
+  line-height:1.8;position:relative;z-index:1;text-align:center
+}
+.type-kicker{font-size:12px;color:var(--accent-strong);margin-bottom:8px;letter-spacing:.06em}
+.type-name{font-size:clamp(28px,4.5vw,46px);line-height:1.08;letter-spacing:-.03em}
+.type-en-name{font-size:14px;color:var(--muted);margin-top:4px;font-style:italic}
+.match{
+  margin-top:18px;display:inline-flex;align-items:center;gap:8px;
+  border-radius:999px;padding:10px 14px;background:var(--soft);
+  border:1px solid var(--line);color:var(--accent-strong);
+  font-weight:700;font-size:14px;line-height:1.4
+}
+.type-moto{
+  margin-top:14px;padding:12px 14px;border-radius:12px;
+  background:var(--soft);border:1px solid var(--line);
+  font-size:14px;line-height:1.75;color:var(--text)
+}
+.moto-en{display:block;font-size:12px;color:var(--muted);font-style:italic;margin-top:4px}
+.analysis-box h3,.dim-box h3,.note-box h3{font-size:16px;margin-bottom:12px}
+.analysis-box p{margin:0;color:#304034;font-size:15px;line-height:1.9;white-space:pre-wrap}
+.dim-list{display:grid;gap:12px}
+.dim-item{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}
+.dim-item-top{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:10px;margin-bottom:8px;flex-wrap:wrap
+}
+.dim-item-name{font-size:14px;font-weight:700;color:var(--text)}
+.dim-item-score{color:var(--accent-strong);font-weight:800;font-size:14px;white-space:nowrap}
+.dim-item p{margin:0;color:var(--muted);font-size:13px;line-height:1.8}
+.note-box p{margin:0;color:var(--muted);font-size:13px;line-height:1.8}
+.save-reminder{
+  border:1px solid var(--line);border-radius:14px;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;background:var(--soft)
+}
+.save-reminder p{margin:0;font-size:13px;color:var(--muted);line-height:1.6}
+.follow-box{
+  border:1px solid var(--line);border-radius:18px;padding:20px 18px;text-align:center;
+  background:linear-gradient(180deg,#fff,#fbfdfb)
+}
+.follow-box h3{font-size:15px;margin-bottom:14px}
+.author-box{
+  border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(180deg,#fff,#fbfdfb);overflow:hidden
+}
+.author-box summary{
+  list-style:none;cursor:pointer;padding:18px;font-size:16px;font-weight:700;
+  color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.author-box summary::-webkit-details-marker{display:none}
+.author-box summary::after{
+  content:'展开 / Expand';font-size:12px;font-weight:700;color:var(--accent-strong);
+  border:1px solid var(--line);background:var(--soft);
+  padding:6px 10px;border-radius:999px;flex-shrink:0
+}
+.author-box[open] summary::after{content:'收起 / Collapse'}
+.author-content{border-top:1px solid var(--line);padding:0 18px 18px}
+.author-content p{margin:14px 0 0;color:#304034;font-size:14px;line-height:1.9}
+.result-actions{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;margin-top:22px
+}
+@media(max-width:860px){.result-top{grid-template-columns:1fr}}
+@media(max-width:600px){
+  .shell{padding:28px 12px 42px}
+  .hero,.test-wrap,.result-wrap{padding:16px}
+  .hero h1{font-size:30px}
+  .question-title{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="rainbow-stripe"></div>
+
+<div class="lang-bar">
+  <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="shell">
+
+<!-- ══ INTRO ══ -->
+<section id="intro" class="screen active">
+  <div class="hero card hero-minimal">
+    <div class="eyebrow">🏳️‍🌈 彩虹电梯测试 · Rainbow Elevator Test</div>
+    <h1 id="hero-title">MBTI已经过时，<br>彩虹电梯来了。</h1>
+    <p class="sub" id="hero-sub">四个维度，40道题，测出你在LGBTQ+光谱上到底是哪种生物。结果有16种，没有一种正常。</p>
+    <div class="straight-note" id="straight-note">
+      ⚡ 直人也欢迎——这个测试专为LGBTQ+社群设计，但如果你是顺性别异性恋，来看看自己在哪些维度上意外出格。
+    </div>
+    <div class="dim-chips">
+      <span class="dim-chip" id="chip1">🪞 性别表达方式</span>
+      <span class="dim-chip" id="chip2">🧲 吸引性别范围</span>
+      <span class="dim-chip" id="chip3">🔥 欲望类型</span>
+      <span class="dim-chip" id="chip4">💞 关系结构</span>
+    </div>
+    <div class="hero-actions hero-actions-center">
+      <button id="startBtn" class="btn-primary" style="font-size:16px;padding:16px 32px">开始测试 →</button>
+    </div>
+    <div class="social-bar" style="margin-top:24px">
+      <a href="#" class="social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span id="soc-discord-txt">加入 Discord</span></a>
+      <a href="#" class="social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span id="soc-x-txt">关注 X</span></a>
+      <a href="#" class="social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg><span id="soc-tiktok-txt">关注 TikTok</span></a>
+    </div>
+  </div>
+  <div class="ad-slot">
+    <!-- AdSense: replace with real ad code after approval -->
+    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="YYYYYYYY" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+    <span id="ad1-label">广告位 · Advertisement</span>
+  </div>
+</section>
+
+<!-- ══ TEST ══ -->
+<section id="test" class="screen">
+  <div class="test-wrap card">
+    <div class="topbar">
+      <div class="progress"><span id="progressBar"></span></div>
+      <div class="progress-text" id="progressText">0 / 40</div>
+    </div>
+    <div id="questionList" class="question-list"></div>
+    <div class="actions-bottom">
+      <div class="hint" id="testHint">全选完才会放行。你都这么勇敢了，做个题怕什么。</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button id="backIntroBtn" class="btn-secondary">返回首页</button>
+        <button id="submitBtn" class="btn-primary" disabled>提交并查看结果</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RESULT ══ -->
+<section id="result" class="screen">
+  <div class="result-wrap card">
+    <div class="result-layout">
+
+      <div class="result-top">
+        <div class="poster-box">
+          <div class="poster-figure">
+            <svg id="resultFigure" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <div class="poster-caption" id="posterCaption"></div>
+        </div>
+        <div class="type-box">
+          <div class="type-kicker" id="resultModeKicker">你的人格类型</div>
+          <div class="type-name" id="resultTypeName"></div>
+          <div class="type-en-name" id="resultTypeEN"></div>
+          <div class="match" id="matchBadge">🏳️‍🌈 —</div>
+          <div class="type-moto" id="resultMoto"></div>
+        </div>
+      </div>
+
+      <div class="analysis-box">
+        <h3 id="analysis-title">该人格的简单解读</h3>
+        <p id="resultDesc"></p>
+      </div>
+
+      <div class="ad-slot">
+        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="ZZZZZZZZ" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+        <span id="ad2-label">广告位 · Advertisement</span>
+      </div>
+
+      <div class="dim-box">
+        <h3 id="dim-title">四维度分析</h3>
+        <div id="dimList" class="dim-list"></div>
+      </div>
+
+      <div class="note-box">
+        <h3 id="note-title">友情提示</h3>
+        <p id="funNote"></p>
+      </div>
+
+      <div class="save-reminder">
+        <div style="font-size:26px;flex-shrink:0">📸</div>
+        <p id="saveReminder">想保存结果？截图或长按屏幕即可保存。分享给朋友看看他们是什么类型！</p>
+      </div>
+
+      <div class="follow-box">
+        <h3 id="follow-title">喜欢这个测试？来找我们！</h3>
+        <div class="social-bar">
+          <a href="#" class="social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span id="fol-discord">加入 Discord 社群</span></a>
+          <a href="#" class="social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span id="fol-x">关注 X 账号</span></a>
+          <a href="#" class="social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg><span id="fol-tiktok">关注 TikTok</span></a>
+        </div>
+        <div style="margin-top:16px">
+          <a href="https://ko-fi.com/YOUR_USERNAME" target="_blank" rel="noopener noreferrer" class="kofi-btn" id="kofi-btn">
+            ☕ <span id="kofi-txt">请作者喝杯奶茶</span>
+          </a>
+        </div>
+      </div>
+
+      <details class="author-box">
+        <summary>作者的话 / From the Author</summary>
+        <div class="author-content">
+          <p id="author-p1">这个测试是为LGBTQ+社群设计的自我探索工具，也是一个幽默的破冰游戏。四个维度分别对应身份认同的核心议题，不代表任何医学或心理学判断。</p>
+          <p id="author-p2">如果你觉得某个结果不准，那很正常——人比标签复杂多了。如果你正在探索自己的身份认同，建议寻找社群支持或专业咨询。🏳️‍🌈</p>
+        </div>
+      </details>
+
+    </div>
+    <div class="result-actions">
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button id="restartBtn" class="btn-secondary">重新测试</button>
+        <button id="toTopBtn" class="btn-primary">回到首页</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+
+const I18N = {
+  "hero-title":     { zh:"MBTI已经过时，<br>彩虹电梯来了。", en:"MBTI is yesterday.<br>Rainbow Elevator is here." },
+  "hero-sub":       { zh:"四个维度，40道题，测出你在LGBTQ+光谱上到底是哪种生物。结果有16种，没有一种正常。", en:"4 dimensions, 40 questions — find out which species you are on the LGBTQ+ spectrum. 16 results. None of them are normal." },
+  "straight-note":  { zh:"⚡ 直人也欢迎——这个测试专为LGBTQ+社群设计，但如果你是顺性别异性恋，来看看自己在哪些维度上意外出格。", en:"⚡ Straight folks welcome — designed for the LGBTQ+ community, but if you are cis-het, come see which dimensions you unexpectedly break the rules on." },
+  "chip1": { zh:"🪞 性别表达方式", en:"🪞 Gender Expression" },
+  "chip2": { zh:"🧲 吸引性别范围", en:"🧲 Attraction Range" },
+  "chip3": { zh:"🔥 欲望类型",     en:"🔥 Desire Type" },
+  "chip4": { zh:"💞 关系结构",     en:"💞 Relationship Structure" },
+  "soc-discord-txt": { zh:"加入 Discord",  en:"Join Discord" },
+  "soc-x-txt":       { zh:"关注 X",        en:"Follow X" },
+  "soc-tiktok-txt":  { zh:"关注 TikTok",   en:"Follow TikTok" },
+  "ad1-label": { zh:"广告位 · Advertisement", en:"Advertisement" },
+  "ad2-label": { zh:"广告位 · Advertisement", en:"Advertisement" },
+  "testHint":     { zh:"全选完才会放行。你都这么勇敢了，做个题怕什么。", en:"Answer all questions to unlock your result. You are brave enough to be here." },
+  "testHintDone": { zh:"全部答完了。现在可以把你的彩虹灵魂交给结果页审判。", en:"All done. Time to meet your rainbow verdict." },
+  "resultModeKicker": { zh:"你的人格类型", en:"YOUR TYPE" },
+  "analysis-title":   { zh:"该人格的简单解读", en:"Type Analysis" },
+  "dim-title":        { zh:"四维度分析", en:"Four-Dimension Breakdown" },
+  "note-title":       { zh:"友情提示", en:"A Note" },
+  "follow-title":     { zh:"喜欢这个测试？来找我们！", en:"Enjoyed the test? Find us!" },
+  "fol-discord": { zh:"加入 Discord 社群", en:"Join our Discord" },
+  "fol-x":       { zh:"关注 X 账号",       en:"Follow on X" },
+  "fol-tiktok":  { zh:"关注 TikTok",      en:"Follow TikTok" },
+  "kofi-txt":    { zh:"请作者喝杯奶茶", en:"Buy Me a Coffee" },
+  "author-p1": { zh:"这个测试是为LGBTQ+社群设计的自我探索工具，也是一个幽默的破冰游戏。四个维度分别对应身份认同的核心议题，不代表任何医学或心理学判断。", en:"This test is a self-exploration tool and icebreaker for the LGBTQ+ community. The four dimensions correspond to core identity questions and carry no medical or psychological judgment." },
+  "author-p2": { zh:"如果你觉得某个结果不准，那很正常——人比标签复杂多了。如果你正在探索自己的身份认同，建议寻找社群支持或专业咨询。🏳️‍🌈", en:"If a result does not feel right, that is completely normal — people are far more complex than labels. If you are exploring your identity, seek community support or professional guidance. 🏳️‍🌈" },
+  "restartBtn": { zh:"重新测试", en:"Retake Test" },
+  "toTopBtn":   { zh:"回到首页", en:"Back to Home" },
+  "submitBtn":  { zh:"提交并查看结果", en:"Submit & See Result" },
+  "backIntroBtn": { zh:"返回首页", en:"Back to Home" },
+  "funNote":    { zh:"本测试仅供娱乐和自我探索，不代表任何医学、心理学或诊断依据。LGBTQ+身份是复杂而美丽的，没有任何测试能完全定义你。严禁用于歧视或评判。🏳️‍🌈", en:"For entertainment and self-exploration only. Not medical, psychological, or diagnostic guidance. LGBTQ+ identity is complex and beautiful — no test can fully define you. Do not use to discriminate. 🏳️‍🌈" },
+  "saveReminder": { zh:"想保存结果？截图或长按屏幕即可保存。分享给朋友看看他们是什么类型！", en:"Want to save your result? Screenshot or long-press to save. Share with friends to find out what type they are!" }
+};
+
+const questions = [
+// ── DIM 1: C vs R (Gender Expression Conformity) ──
+{id:'cr1',dim:'CR',
+ zh:'你平时的穿着打扮：',
+ en:'Your everyday style:',
+ opts:[
+  {zh:'基本符合自己性别的社会期待，买衣服默认走男装区或女装区。',en:'Mostly aligns with gender expectations — you shop in the "right" section.',v:1},
+  {zh:'大部分合规，但偶尔会穿一些"越界"的单品，享受别人的眼神。',en:'Mostly conventional, but occasionally throw in a genre-bending piece.',v:2},
+  {zh:'男装女装随便穿，今天心情决定，性别标签不是你的老板。',en:'Whatever you feel like. Gender labels are not your manager.',v:3},
+ ]},
+{id:'cr2',dim:'CR',
+ zh:'有人说"你打扮得不像你的性别"，你会：',
+ en:'Someone says "you don\'t dress like your gender." You:',
+ opts:[
+  {zh:'有点在意，可能解释一下或者下次注意。',en:'Feel mildly bothered and consider adjusting.',v:1},
+  {zh:'无所谓，但也不会特意去挑战。',en:'Shrug it off, but not deliberately pushing back either.',v:2},
+  {zh:'"谢谢夸奖。"然后原地转个圈继续走。',en:'"Thanks for the compliment." Then do a little spin and walk away.',v:3},
+ ]},
+{id:'cr3',dim:'CR',
+ zh:'你上公共厕所会：',
+ en:'Public restrooms: you go into:',
+ opts:[
+  {zh:'进符合自己性别认同的那间，这是基本操作。',en:'The one matching your gender identity. Obviously.',v:1},
+  {zh:'一般进符合的那间，但如果对面没人排队也会直接进。',en:'Usually the matching one, but sneak into the empty one if needed.',v:2},
+  {zh:'哪个空进哪个，性别标志牌不是针对你设计的。',en:'Whichever is empty. Those signs aren\'t directed at you personally.',v:3},
+ ]},
+{id:'cr4',dim:'CR',
+ zh:'填表格遇到"性别：男/女"，你会：',
+ en:'A form asks "Gender: Male / Female". You:',
+ opts:[
+  {zh:'选一个，有一个更符合我的。',en:'Pick one — one of them is accurate enough.',v:1},
+  {zh:'选一个但内心不舒服，希望有更多选项。',en:'Pick one, but feel mildly annoyed there are only two.',v:2},
+  {zh:'想划掉整个选项，在旁边写"以上皆非"或画个彩虹。',en:'Want to cross it out and write "none of the above" or draw a rainbow.',v:3},
+ ]},
+{id:'cr5',dim:'CR',
+ zh:'别人第一次见到你，通常能准确判断你的性别吗？',
+ en:'When people meet you for the first time, can they usually read your gender correctly?',
+ opts:[
+  {zh:'能，我的外表基本符合社会对我性别的预期。',en:'Yes — I present within expected norms.',v:1},
+  {zh:'有时候不确定，但我不会特意纠正或强调。',en:'Sometimes uncertain — I don\'t bother correcting them.',v:2},
+  {zh:'经常判断错，或者"ta不好判断"——我不介意，甚至有点享受这种模糊。',en:'"Hard to read" is basically my brand. I enjoy the ambiguity.',v:3},
+ ]},
+{id:'cr6',dim:'CR',
+ zh:'你在正式场合（工作/家庭聚会）的打扮：',
+ en:'At formal occasions (work, family events):',
+ opts:[
+  {zh:'在性别规范内，正式场合我不想因为外表制造额外讨论。',en:'Stay within gender norms. Not the time or place for a statement.',v:1},
+  {zh:'会稍微收敛，但还是有几个"个人签名"细节。',en:'Tone it down a bit, but keep a few signature personal touches.',v:2},
+  {zh:'正式场合也是我，不会为了"看起来专业"而假装合规。',en:'Same as always. Professionalism isn\'t a gender uniform.',v:3},
+ ]},
+{id:'cr7',dim:'CR',
+ zh:'你小时候玩的玩具和游戏：',
+ en:'Growing up, the toys and games you played:',
+ opts:[
+  {zh:'基本是自己性别"应该"玩的那类，没有觉得哪里不对。',en:'Mostly what was expected for your gender — felt natural.',v:1},
+  {zh:'混着玩，但没有特别意识到这跟性别有关。',en:'A mix, but didn\'t consciously connect it to gender.',v:2},
+  {zh:'经常玩"另一个性别的"东西，或者根本没按性别划分过。',en:'Consistently crossed the gender toy aisle. Never really sorted by gender.',v:3},
+ ]},
+{id:'cr8',dim:'CR',
+ zh:'关于性别规范，你的整体态度是：',
+ en:'Your general attitude toward gender norms:',
+ opts:[
+  {zh:'遵守不代表认同，只是更省力，不想每天解释自己。',en:'Following them is just easier — not an endorsement, just efficiency.',v:1},
+  {zh:'有些规范合理，有些不合理，选择性遵守。',en:'Some make sense, some don\'t — pick and choose.',v:2},
+  {zh:'它主要是用来限制人的，我的存在本身就是一种挑战。',en:'Mostly a control mechanism. My existence is already a challenge to them.',v:3},
+ ]},
+{id:'cr9',dim:'CR',
+ zh:'你对自己外表性别信号（发型、妆容、配饰）的态度：',
+ en:'Your attitude toward gender signals in your appearance (hair, makeup, accessories):',
+ opts:[
+  {zh:'会考虑，不想给人发送"错误"信息。',en:'Pay attention to them — don\'t want to send the wrong message.',v:1},
+  {zh:'偶尔会有意混搭，但不是每天的功课。',en:'Occasionally mix them up deliberately, but it\'s not a daily mission.',v:2},
+  {zh:'爱怎么搭就怎么搭，别人怎么读取是他们的事。',en:'Style as you please — how others read it is their problem.',v:3},
+ ]},
+{id:'cr10',dim:'CR',
+ zh:'如果你的伴侣希望你在公开场合打扮得"更符合性别"，你会：',
+ en:'If a partner asked you to dress "more gender-appropriate" in public, you would:',
+ opts:[
+  {zh:'可以理解他们的想法，愿意适当调整。',en:'Understand their perspective and be willing to adjust somewhat.',v:1},
+  {zh:'会讨论，但不会完全牺牲自己的风格。',en:'Have a conversation — but won\'t completely sacrifice your style.',v:2},
+  {zh:'这会成为我们关系的一个根本性问题。我不会改，ta得接受这一点。',en:'This would be a dealbreaker conversation. I won\'t change; they need to accept me.',v:3},
+ ]},
+
+// ── DIM 2: O vs M (Attraction Range) ──
+{id:'om1',dim:'OM',
+ zh:'回想过去五年，你心动/喜欢过的对象，他们的性别：',
+ en:'Think about the last 5 years — the gender(s) of people you\'ve had crushes on:',
+ opts:[
+  {zh:'只有一种性别，就一种，没有例外，感谢发问。',en:'One gender only. No exceptions. Thanks for asking.',v:1},
+  {zh:'主要是一种，但偶尔会有跨越的情况，让我自己也困惑。',en:'Mostly one, with occasional exceptions that confuse even me.',v:2},
+  {zh:'不止一种，或者根本没按性别分类过。',en:'More than one — or I never sorted by gender in the first place.',v:3},
+ ]},
+{id:'om2',dim:'OM',
+ zh:'你在交友软件上看到一个人写"只找同性"，你会：',
+ en:'On a dating app, someone writes "same gender only." You think:',
+ opts:[
+  {zh:'"很好，我也是。"清晰边界，节省时间，职业素养。',en:'"Same energy." Clear boundaries, saves time, very professional.',v:1},
+  {zh:'尊重，但我自己没办法这么确定地写出来。',en:'Respect it, but I couldn\'t write that about myself so confidently.',v:2},
+  {zh:'"锁死一种性别感觉好浪费，万一遇到特别的人呢？"',en:'"Locking into one gender feels like leaving options on the table."',v:3},
+ ]},
+{id:'om3',dim:'OM',
+ zh:'如果你喜欢的人突然宣布要跨性别，你会：',
+ en:'The person you\'re dating announces they\'re transitioning. You:',
+ opts:[
+  {zh:'大概率会失去感觉——因为我喜欢的确实是那种特定性别本身。',en:'Probably lose feelings — the specific gender was genuinely part of the attraction.',v:1},
+  {zh:'会震惊，需要时间处理，但不会立刻离开。',en:'Be shocked, need time to process, but won\'t immediately leave.',v:2},
+  {zh:'没关系，我喜欢的是这个人，性别是ta的皮肤，不是ta的灵魂。',en:'Fine by me — I love the person, not their gender. Gender is skin, not soul.',v:3},
+ ]},
+{id:'om4',dim:'OM',
+ zh:'你认为你能对哪些性别产生浪漫或情感上的吸引？',
+ en:'Which genders do you think you could be romantically or sexually attracted to?',
+ opts:[
+  {zh:'只有男性，或只有女性。非常确定，不用考虑。',en:'Only men, or only women. Very certain. No deliberation needed.',v:1},
+  {zh:'主要是一种，但在特定情况下可能有例外。',en:'Mainly one, but there could be exceptions in specific circumstances.',v:2},
+  {zh:'男性、女性、非二元都有可能，取决于具体的人而不是性别标签。',en:'Men, women, non-binary — depends on the person, not the label.',v:3},
+ ]},
+{id:'om5',dim:'OM',
+ zh:'你的朋友问："你到底喜欢男的还是女的？"你会：',
+ en:'Your friend asks: "So do you like guys or girls?" You say:',
+ opts:[
+  {zh:'"男的。"或"女的。"简洁明了，不需要补充。',en:'"Guys." or "Girls." Simple. No footnotes.',v:1},
+  {zh:'说一个答案，但其实那个答案并不完全准确，只是最省事的解释。',en:'Give a simple answer that\'s not fully accurate but easiest to explain.',v:2},
+  {zh:'"都行，看人。"或者"你问这个干嘛，管你啥事？"',en:'"Either, depends on the person." Or "why do you ask, honestly?"',v:3},
+ ]},
+{id:'om6',dim:'OM',
+ zh:'你走在街上，什么样的人会让你多看一眼？',
+ en:'Walking down the street — what kind of person makes you look twice?',
+ opts:[
+  {zh:'只有特定性别的人，非常一致，从来没有例外。',en:'Only one specific gender — totally consistent, never an exception.',v:1},
+  {zh:'主要是一种性别，但偶尔某个不同性别的人也会让我多看。',en:'Mainly one gender, but occasionally someone else catches my eye.',v:2},
+  {zh:'各种性别都有可能，有时候完全不是性别吸引我，而是气场或眼神。',en:'Any gender — sometimes it\'s not even about gender, it\'s the energy.',v:3},
+ ]},
+{id:'om7',dim:'OM',
+ zh:'如果你发现你的伴侣是双性恋/泛性恋，你会：',
+ en:'You find out your partner is bi/pan. You:',
+ opts:[
+  {zh:'有点不安，会担心ta是不是还想要另一种性别——逻辑上不成立但情绪上就是这样。',en:'Feel slightly anxious — "are they missing another gender?" Illogical but emotional.',v:1},
+  {zh:'需要一点时间消化，但最终接受，因为行动才是证明。',en:'Need a moment to digest, but ultimately okay — actions speak louder.',v:2},
+  {zh:'完全没问题，甚至觉得"我们理解彼此"或者"我也是"。',en:'No problem at all — "we understand each other" or "same tbh."',v:3},
+ ]},
+{id:'om8',dim:'OM',
+ zh:'你对自己吸引取向标签的确定性：',
+ en:'How certain are you about your attraction orientation label?',
+ opts:[
+  {zh:'非常确定，我就是同性恋/异性恋，不用再想了，谢谢。',en:'Very certain. Gay or straight. Done. No further thought needed.',v:1},
+  {zh:'大体确定，但偶尔会在某些人身上犯嘀咕。',en:'Mostly certain, but occasionally second-guess myself around specific people.',v:2},
+  {zh:'不太确定，任何单一标签都装不下我，"流动"可能更准确。',en:'Not certain — no single label fits. "Fluid" might be the most honest answer.',v:3},
+ ]},
+// Q19-20 are 2-option only (these work best binary)
+{id:'om9',dim:'OM',
+ zh:'你在看喜欢的类型内容时，性别是搜索条件吗？',
+ en:'When browsing content you find attractive, is gender a search filter?',
+ opts:[
+  {zh:'是的，必须的，不然结果太杂了。',en:'Yes, absolutely — otherwise it\'s too broad.',v:1},
+  {zh:'有时候是，有时候不是，看心情。',en:'Sometimes yes, sometimes no — depends on my mood.',v:2},
+  {zh:'不太是，我更关注气质、类型、能量，不是性别本身。',en:'Not really — I filter by vibe, type, energy. Not gender itself.',v:3},
+ ]},
+{id:'om10',dim:'OM',
+ zh:'你对"泛性恋"（对所有性别都可能产生吸引）的理解是：',
+ en:'Your understanding of "pansexual" (attracted to all genders):',
+ opts:[
+  {zh:'存在且合理，只是跟我没关系，我的吸引对象非常固定。',en:'Valid and real — just doesn\'t apply to me. Mine is very fixed.',v:1},
+  {zh:'我大概理解，但不确定自己是不是。',en:'I sort of understand it — not sure if it applies to me.',v:2},
+  {zh:'我就是，或者这个词比"异/同性恋"更准确地描述了我。',en:'This is me, or at least more accurate than gay/straight.',v:3},
+ ]},
+
+// ── DIM 3: S vs A (Sexual vs Asexual spectrum) ──
+{id:'sa1',dim:'SA',
+ zh:'你和暧昧对象约在私密空间，对方说"今晚只想抱着聊天，不做别的"，你会：',
+ en:'You\'re alone with your crush. They say "I just want to cuddle and talk tonight." You:',
+ opts:[
+  {zh:'表面说"好"，内心：这不是约好的剧情啊。',en:'Say "sure" while internally thinking this isn\'t what you rehearsed.',v:1},
+  {zh:'有点失落，但也觉得陪伴本身挺好的，下次吧。',en:'Slightly disappointed but genuinely enjoy the closeness anyway.',v:2},
+  {zh:'"好啊。"然后真的开心地抱了一整晚，完全不觉得少了什么。',en:'"Great!" And genuinely feel 100% fulfilled by a night of cuddling.',v:3},
+ ]},
+{id:'sa2',dim:'SA',
+ zh:'你手机相册"个人收藏"里存的最多的是：',
+ en:'Your phone\'s "personal favorites" album contains mostly:',
+ opts:[
+  {zh:'让你心跳加速的图片和内容、让你怦然心动的人。',en:'Heart-racing images, content that excites you, people who make your pulse jump.',v:1},
+  {zh:'混着——有风景猫猫，也有一些让你心动的人。',en:'A mix — landscapes and cats, plus some people who catch your eye.',v:2},
+  {zh:'风景、猫、食物、朋友的表情包、让你平静的图。',en:'Scenery, cats, food, memes from friends, things that bring you peace.',v:3},
+ ]},
+{id:'sa3',dim:'SA',
+ zh:'你和一个很心动的人约会三次后，对方说"我想慢慢来，半年内不打算有性"，你会：',
+ en:'After 3 great dates, they say "I\'d like to take things slow — no sex for 6 months." You:',
+ opts:[
+  {zh:'"那我们的节奏可能不太合适……"然后开始犹豫要不要继续。',en:'"Our timelines might not match..." Start wondering if you should continue.',v:1},
+  {zh:'有点犹豫，但愿意尝试，看感情能不能先发展。',en:'Hesitant, but willing to try — see if emotional connection builds first.',v:2},
+  {zh:'"没问题，我们可以先去爬山、看展、一起发呆。"认真的。',en:'"Perfect — let\'s hike, visit galleries, and stare at nothing together." Genuinely.',v:3},
+ ]},
+{id:'sa4',dim:'SA',
+ zh:'你对"无感情基础的约会"的态度是：',
+ en:'Your attitude toward casual, no-strings dating:',
+ opts:[
+  {zh:'可以接受，只要双方真实意愿一致、安全。',en:'Fine with it, maybe done it — as long as it\'s safe and consensual.',v:1},
+  {zh:'理解为什么别人会，但我自己需要一点情感基础。',en:'Understand why others do it, but personally need some emotional foundation.',v:2},
+  {zh:'不太感兴趣，或完全不感兴趣——不是道德评判，就是没有这种需求。',en:'Not interested — or zero interest. Not a judgment, just no drive.',v:3},
+ ]},
+{id:'sa5',dim:'SA',
+ zh:'你上一次主动产生"想要性"的冲动是什么时候？',
+ en:'When did you last spontaneously feel sexual desire?',
+ opts:[
+  {zh:'最近一周内，正常频率，不值得特别说明。',en:'Within the last week. Normal frequency, not worth noting.',v:1},
+  {zh:'大概一个月内，或者需要对方主动才有反应。',en:'Within the past month, or mainly responsive rather than spontaneous.',v:2},
+  {zh:'一个月以上 / 很久 / 需要想想 / 可能从来没有过？',en:'Over a month / a long time / I\'d have to think / possibly never?',v:3},
+ ]},
+{id:'sa6',dim:'SA',
+ zh:'你更害怕哪种情况？',
+ en:'Which scenario scares you more?',
+ opts:[
+  {zh:'伴侣深爱我的灵魂，却对我的身体毫无欲望。',en:'Partner deeply loves my soul but has zero physical desire for me.',v:1},
+  {zh:'前者更让我不安，但后者也很糟——身体亲密对我来说需要情感基础才有意义。',en:'The first scares me more, but the second is also bad — physical intimacy only means something to me when there\'s emotional depth behind it.',v:2},
+  {zh:'伴侣只想要我的身体，却不在意我是什么人。',en:'Partner only wants my body and doesn\'t care who I actually am.',v:3},
+ ]},
+{id:'sa7',dim:'SA',
+ zh:'你在亲密关系里，性的位置是：',
+ en:'In a romantic relationship, sex plays the role of:',
+ opts:[
+  {zh:'非常重要，是连接彼此的核心方式之一，缺席了关系会很不完整。',en:'Central — it\'s one of the core ways I connect. The relationship feels incomplete without it.',v:1},
+  {zh:'重要，但不是唯一核心，情感连接同样不可缺少。',en:'Important, but not the only core — emotional connection matters just as much.',v:2},
+  {zh:'可有可无，情感连接、陪伴和理解才是更核心的东西。',en:'Optional — companionship and emotional understanding are far more central.',v:3},
+ ]},
+{id:'sa8',dim:'SA',
+ zh:'你对"无性恋"（asexual，对他人不产生吸引冲动）的理解：',
+ en:'Your understanding of "asexual" (not experiencing attraction impulses):',
+ opts:[
+  {zh:'存在，但我截然相反，我对他人有很强的吸引感受。',en:'Valid — but the opposite of me. I definitely experience strong attraction.',v:1},
+  {zh:'存在，而且我有时候觉得自己可能偏向这一侧。',en:'Valid — and I sometimes wonder if I lean toward this end.',v:2},
+  {zh:'我就在那个谱系上，或者"灰色性恋"更接近描述我。',en:'This is me, or "grey-asexual" is more accurate.',v:3},
+ ]},
+{id:'sa9',dim:'SA',
+ zh:'你理想中的周末早晨是：',
+ en:'Your ideal Sunday morning:',
+ opts:[
+  {zh:'被吻醒，然后赖床到中午，外卖放门口，下午继续懒着。',en:'Wake up to kisses, stay in bed until noon, delivery at the door, a perfectly lazy day.',v:1},
+  {zh:'慵懒地醒来，亲吻拥抱，然后一起做早餐。',en:'Lazy wake-up, kissing, cuddling, then make breakfast together.',v:2},
+  {zh:'一起做早餐，坐在窗边聊天，亲一下额头就够了——真的够了。',en:'Make breakfast together, chat by the window, a forehead kiss. That\'s genuinely enough.',v:3},
+ ]},
+{id:'sa10',dim:'SA',
+ zh:'如果你的伴侣突然无法进行亲密接触，你会：',
+ en:'If your partner suddenly lost the ability to be physically intimate, you would:',
+ opts:[
+  {zh:'很难接受，这对我来说是关系完整性的重要组成部分。',en:'Struggle with it — this is an important part of relationship completeness for me.',v:1},
+  {zh:'需要调整，但相信我们可以找到其他方式维持亲密。',en:'Need to adjust, but believe you could find other ways to stay intimate.',v:2},
+  {zh:'完全不影响。我们还有一百种方式亲密，那只是其中一种。',en:'Completely fine. There are a hundred ways to be intimate — that\'s just one.',v:3},
+ ]},
+
+// ── DIM 4: G vs P (Relationship Structure) ──
+{id:'gp1',dim:'GP',
+ zh:'你发现你的伴侣和另一个人接吻了，你的第一反应是：',
+ en:'You find out your partner kissed someone else. First reaction:',
+ opts:[
+  {zh:'"完了，天塌了。"不管什么背景，先崩一下再说。',en:'"Everything is ruined." Full stop. Figure out context later.',v:1},
+  {zh:'非常难受，但先听对方解释，再决定下一步。',en:'Devastated, but listen to their explanation before deciding anything.',v:2},
+  {zh:'"等等，先停下，安全措施做了吗？我们谈谈边界。"',en:'"Wait, hold on — did they use protection? Let\'s discuss our boundaries."',v:3},
+ ]},
+{id:'gp2',dim:'GP',
+ zh:'你同时和两个人约会，两人都不知道对方存在，你会：',
+ en:'You\'re dating two people simultaneously. Neither knows about the other. You:',
+ opts:[
+  {zh:'非常痛苦，必须立刻二选一，这种状态让我觉得自己是坏人。',en:'Feel terrible — must choose immediately. This makes you feel like a bad person.',v:1},
+  {zh:'有点内疚，但还在观望，等感情更明朗再做决定。',en:'Feel slightly guilty but observing — waiting for feelings to clarify.',v:2},
+  {zh:'如果他们知情同意，我不认为这有什么问题。爱不是稀缺资源。',en:'If they were consensually informed, you wouldn\'t see the issue. Love isn\'t scarce.',v:3},
+ ]},
+{id:'gp3',dim:'GP',
+ zh:'你对"开放式关系"的看法是：',
+ en:'Your view on open relationships:',
+ opts:[
+  {zh:'理解它存在，但对我来说就是给出轨找借口，接受不了。',en:'Understand they exist, but for you it\'s just a cover for cheating.',v:1},
+  {zh:'可以理解，但自己不确定能不能做到，需要非常强的信任基础。',en:'Can understand them — but unsure if you could manage it. Requires extreme trust.',v:2},
+  {zh:'挺合理，一个人真的满足不了另一个人所有维度的需求。',en:'Makes a lot of sense — one person genuinely can\'t meet every need.',v:3},
+ ]},
+{id:'gp4',dim:'GP',
+ zh:'你的嫉妒程度：',
+ en:'Your jealousy level:',
+ opts:[
+  {zh:'偏高，伴侣和某个特定的人走得太近我会本能地不舒服。',en:'High — if your partner gets close to someone specific you get instinctively uncomfortable.',v:1},
+  {zh:'中等，一般不吃醋，但如果对方开始隐瞒事情就不行了。',en:'Moderate — usually fine, but secrecy triggers it immediately.',v:2},
+  {zh:'偏低，甚至看到伴侣和别人很开心我也会觉得高兴（compersion）。',en:'Low to nonexistent — seeing your partner happy with others actually makes you happy.',v:3},
+ ]},
+{id:'gp5',dim:'GP',
+ zh:'你理想的长期关系形态是：',
+ en:'Your ideal long-term relationship structure:',
+ opts:[
+  {zh:'一对一，彼此排他，这是我安全感的来源。',en:'Monogamous and exclusive. This is where your security lives.',v:1},
+  {zh:'默认一对一，但如果双方都同意，可以讨论边界调整。',en:'Default monogamous, but open to discussing adjustments if both agree.',v:2},
+  {zh:'可以协商开放，或者多元家庭/共居——只要大家诚实且快乐。',en:'Negotiably open, or a chosen family structure — honesty and happiness above all.',v:3},
+ ]},
+{id:'gp6',dim:'GP',
+ zh:'如果你的伴侣提出"我想和你以及另一个人一起生活"，你会：',
+ en:'Your partner says "I want us to live with someone else I\'m also in a relationship with." You:',
+ opts:[
+  {zh:'"不行，我做不到。"这条线很清晰。',en:'"Absolutely not." That\'s a firm line.',v:1},
+  {zh:'非常惊讶，需要很长时间才能消化，结果不确定。',en:'Very surprised — need a long time to process. Outcome uncertain.',v:2},
+  {zh:'"可以谈，但先要定好边界和规则。"不排斥探索。',en:'"Let\'s talk, but we need to set boundaries and rules first." Open to exploring.',v:3},
+ ]},
+{id:'gp7',dim:'GP',
+ zh:'你对"多人同时约会"的态度：',
+ en:'Your attitude toward dating multiple people at once:',
+ opts:[
+  {zh:'听起来就很复杂，嫉妒感会把我淹没。',en:'Even thinking about it is destabilizing — jealousy would overwhelm you.',v:1},
+  {zh:'好奇过，但实际操作起来感觉会很复杂，不确定能处理好。',en:'Curious in theory, but the practicalities seem complicated.',v:2},
+  {zh:'不排斥，甚至好奇，具体看人和时机。',en:'Open to exploring, even curious. Depends on the people and timing.',v:3},
+ ]},
+{id:'gp8',dim:'GP',
+ zh:'你手机里有没有同时和多个暧昧对象保持联系？',
+ en:'Do you currently text-flirt with multiple people at once?',
+ opts:[
+  {zh:'没有，一旦认真了我就只聊一个，不然觉得对人不公平。',en:'No — once you\'re serious about someone, you focus. It feels unfair otherwise.',v:1},
+  {zh:'有，但在刚开始了解阶段，一旦决定了就会收缩。',en:'Yes, during early stages — once committed, you narrow down.',v:2},
+  {zh:'有，而且我觉得这很正常，不必要在正式化之前就封闭自己。',en:'Yes, and you think it\'s totally normal — no need to close off before things are official.',v:3},
+ ]},
+{id:'gp9',dim:'GP',
+ zh:'你看到一对开放式关系的情侣公开分享他们的故事，你内心：',
+ en:'You see an open-relationship couple publicly sharing their story. Internally:',
+ opts:[
+  {zh:'"祝福你们，但我完全做不到。"钦佩但无法共情。',en:'"Good for them." Respect but zero personal resonance.',v:1},
+  {zh:'"好奇，但感觉很难，也许适合某些人吧。"',en:'"Interesting — seems hard, but maybe right for some people."',v:2},
+  {zh:'"好棒，这才是诚实的关系形态。"或者"我以前就是这样。"',en:'"Honestly goals." Or "I used to live like this."',v:3},
+ ]},
+{id:'gp10',dim:'GP',
+ zh:'你在亲密关系中的核心需求是：',
+ en:'Your core need in an intimate relationship:',
+ opts:[
+  {zh:'安全感和唯一性——知道我是那个特别的人，其他人不行。',en:'Security and exclusivity — knowing you\'re the one. No sharing.',v:1},
+  {zh:'信任和诚实——只要对方不欺骗我，形式可以谈。',en:'Trust and honesty — as long as there\'s no deception, structure is negotiable.',v:2},
+  {zh:'自由和真实——能做自己，不被关系框架限制成某种固定角色。',en:'Freedom and authenticity — be yourself, unconstrained by role expectations.',v:3},
+ ]},
+];
+
+
+// ══════════════════════════════════════════════
+// SVG FIGURES — geometric low-poly style
+// ══════════════════════════════════════════════
+function makeFigure(type) {
+  const figs = {
+    // C-O-S-G: warrior with sword, confident pose
+    'C-O-S-G': {col1:'#6bcb77',col2:'#4a9e58',hair:'#2d2d2d',bg:'#0e2a15',
+      extra:`<polygon points="80,40 95,55 65,55" fill="#2d2d2d"/>
+      <rect x="72" y="55" width="16" height="18" fill="#6bcb77"/>
+      <polygon points="72,55 88,55 92,73 68,73" fill="#5ab869"/>
+      <rect x="76" y="73" width="5" height="20" fill="#3d7a4a"/>
+      <rect x="79" y="73" width="5" height="20" fill="#3d7a4a"/>
+      <polygon points="68,73 76,73 74,93 66,90" fill="#4a9e58"/>
+      <polygon points="88,73 96,73 94,90 86,93" fill="#4a9e58"/>
+      <line x1="95" y1="60" x2="108" y2="50" stroke="#c0c0c0" stroke-width="3"/>
+      <line x1="108" y1="50" x2="112" y2="45" stroke="#e0e0e0" stroke-width="2"/>
+      <text x="80" y="115" text-anchor="middle" font-size="18" fill="#6bcb77">👑</text>`},
+    // C-O-S-P: juggling figure, multiple arms
+    'C-O-S-P': {col1:'#ff9f43',col2:'#e08030',hair:'#1a1a2e',bg:'#2a1500',
+      extra:`<polygon points="80,38 97,52 63,52" fill="#1a1a2e"/>
+      <rect x="71" y="52" width="18" height="20" fill="#ff9f43"/>
+      <polygon points="71,52 89,52 93,72 67,72" fill="#e08030"/>
+      <rect x="75" y="72" width="5" height="22" fill="#c06820"/>
+      <rect x="80" y="72" width="5" height="22" fill="#c06820"/>
+      <line x1="71" y1="58" x2="55" y2="52" stroke="#ff9f43" stroke-width="2.5"/>
+      <line x1="89" y1="58" x2="105" y2="52" stroke="#ff9f43" stroke-width="2.5"/>
+      <circle cx="52" cy="50" r="5" fill="#ffd93d"/>
+      <circle cx="108" cy="50" r="5" fill="#ff6b6b"/>
+      <circle cx="80" cy="42" r="5" fill="#c77dff"/>
+      <text x="80" y="112" text-anchor="middle" font-size="14" fill="#ff9f43">📅</text>`},
+    // C-O-A-G: dreamy figure looking up
+    'C-O-A-G': {col1:'#4d96ff',col2:'#2a70d0',hair:'#8884a8',bg:'#001030',
+      extra:`<ellipse cx="80" cy="44" rx="14" ry="16" fill="#c8b8f8"/>
+      <polygon points="66,44 94,44 96,48 64,48" fill="#8884a8"/>
+      <rect x="72" y="57" width="16" height="18" fill="#4d96ff"/>
+      <polygon points="72,57 88,57 91,75 69,75" fill="#2a70d0"/>
+      <rect x="75" y="75" width="5" height="20" fill="#1a50a0"/>
+      <rect x="80" y="75" width="5" height="20" fill="#1a50a0"/>
+      <line x1="72" y1="62" x2="58" y2="68" stroke="#4d96ff" stroke-width="2"/>
+      <line x1="88" y1="62" x2="102" y2="68" stroke="#4d96ff" stroke-width="2"/>
+      <text x="50" y="45" font-size="16">✨</text>
+      <text x="100" y="40" font-size="12">💭</text>`},
+    // C-O-A-P: figure with multiple emotional bubbles
+    'C-O-A-P': {col1:'#ffd93d',col2:'#c0a020',hair:'#4a4060',bg:'#1a1500',
+      extra:`<ellipse cx="80" cy="44" rx="13" ry="15" fill="#f0c8a0"/>
+      <rect x="72" y="56" width="16" height="18" fill="#ffd93d"/>
+      <polygon points="72,56 88,56 91,74 69,74" fill="#c0a020"/>
+      <rect x="75" y="74" width="5" height="21" fill="#a08010"/>
+      <rect x="80" y="74" width="5" height="21" fill="#a08010"/>
+      <line x1="72" y1="61" x2="54" y2="55" stroke="#ffd93d" stroke-width="2"/>
+      <line x1="88" y1="61" x2="106" y2="55" stroke="#ffd93d" stroke-width="2"/>
+      <text x="42" y="52" font-size="13">💬</text>
+      <text x="104" y="52" font-size="13">💬</text>
+      <text x="70" y="30" font-size="11">💬</text>`},
+    // C-M-S-G: figure with two hearts
+    'C-M-S-G': {col1:'#ee7e9a',col2:'#c05070',hair:'#2a1a2e',bg:'#200010',
+      extra:`<ellipse cx="80" cy="44" rx="13" ry="15" fill="#f0c8b8"/>
+      <rect x="72" y="57" width="16" height="18" fill="#ee7e9a"/>
+      <polygon points="72,57 88,57 91,75 69,75" fill="#c05070"/>
+      <rect x="75" y="75" width="5" height="20" fill="#a03050"/>
+      <rect x="80" y="75" width="5" height="20" fill="#a03050"/>
+      <line x1="72" y1="62" x2="58" y2="56" stroke="#ee7e9a" stroke-width="2"/>
+      <line x1="88" y1="62" x2="102" y2="56" stroke="#ee7e9a" stroke-width="2"/>
+      <text x="48" y="52" font-size="16">💙</text>
+      <text x="96" y="52" font-size="16">💗</text>`},
+    // C-M-S-P: party/celebration figure
+    'C-M-S-P': {col1:'#c77dff',col2:'#9050c0',hair:'#101020',bg:'#150020',
+      extra:`<ellipse cx="80" cy="43" rx="13" ry="15" fill="#f0c8e0"/>
+      <rect x="72" y="56" width="16" height="18" fill="#c77dff"/>
+      <polygon points="72,56 88,56 91,74 69,74" fill="#9050c0"/>
+      <rect x="75" y="74" width="5" height="21" fill="#7030a0"/>
+      <rect x="80" y="74" width="5" height="21" fill="#7030a0"/>
+      <line x1="72" y1="61" x2="55" y2="52" stroke="#c77dff" stroke-width="2"/>
+      <line x1="88" y1="61" x2="105" y2="52" stroke="#c77dff" stroke-width="2"/>
+      <text x="44" y="50" font-size="16">✨</text>
+      <text x="100" y="48" font-size="16">🎉</text>
+      <text x="72" y="26" font-size="14">🎊</text>`},
+    // C-M-A-G: gentle figure with a single flower
+    'C-M-A-G': {col1:'#7ee8b5',col2:'#40b070',hair:'#2a3a2a',bg:'#001a0a',
+      extra:`<ellipse cx="80" cy="44" rx="13" ry="15" fill="#d8f0e0"/>
+      <rect x="72" y="57" width="16" height="18" fill="#7ee8b5"/>
+      <polygon points="72,57 88,57 91,75 69,75" fill="#40b070"/>
+      <rect x="75" y="75" width="5" height="20" fill="#208050"/>
+      <rect x="80" y="75" width="5" height="20" fill="#208050"/>
+      <line x1="72" y1="62" x2="58" y2="68" stroke="#7ee8b5" stroke-width="2"/>
+      <line x1="88" y1="62" x2="102" y2="68" stroke="#7ee8b5" stroke-width="2"/>
+      <text x="75" y="22" font-size="18" text-anchor="middle">🌸</text>`},
+    // C-M-A-P: commune figure
+    'C-M-A-P': {col1:'#ffd93d',col2:'#c0a020',hair:'#3a2a10',bg:'#1a1000',
+      extra:`<ellipse cx="80" cy="44" rx="13" ry="15" fill="#f8e8c0"/>
+      <rect x="72" y="57" width="16" height="18" fill="#ffd93d"/>
+      <polygon points="72,57 88,57 91,75 69,75" fill="#c0a020"/>
+      <rect x="75" y="75" width="5" height="20" fill="#a08010"/>
+      <rect x="80" y="75" width="5" height="20" fill="#a08010"/>
+      <line x1="72" y1="61" x2="52" y2="55" stroke="#ffd93d" stroke-width="2"/>
+      <line x1="88" y1="61" x2="108" y2="55" stroke="#ffd93d" stroke-width="2"/>
+      <text x="38" y="52" font-size="14">🫂</text>
+      <text x="100" y="52" font-size="14">🫂</text>
+      <text x="72" y="28" font-size="12">🫂</text>`},
+    // R-O-S-G: punk/rebel figure
+    'R-O-S-G': {col1:'#ff6b6b',col2:'#c03030',hair:'#101010',bg:'#200000',
+      extra:`<polygon points="80,28 100,50 60,50" fill="#101010"/>
+      <polygon points="80,28 92,36 80,38 68,36" fill="#303030"/>
+      <rect x="71" y="50" width="18" height="20" fill="#ff6b6b"/>
+      <polygon points="71,50 89,50 93,70 67,70" fill="#c03030"/>
+      <rect x="75" y="70" width="5" height="22" fill="#a01010"/>
+      <rect x="80" y="70" width="5" height="22" fill="#a01010"/>
+      <line x1="71" y1="56" x2="55" y2="50" stroke="#ff6b6b" stroke-width="2.5"/>
+      <line x1="89" y1="56" x2="105" y2="50" stroke="#ff6b6b" stroke-width="2.5"/>
+      <text x="45" y="48" font-size="14">⚡</text>`},
+    // R-O-S-P: spinning figure
+    'R-O-S-P': {col1:'#4d96ff',col2:'#2060c0',hair:'#101030',bg:'#000820',
+      extra:`<polygon points="80,30 98,50 62,50" fill="#101030"/>
+      <rect x="71" y="50" width="18" height="20" fill="#4d96ff"/>
+      <polygon points="71,50 89,50 93,70 67,70" fill="#2060c0"/>
+      <rect x="75" y="70" width="5" height="22" fill="#1040a0"/>
+      <rect x="80" y="70" width="5" height="22" fill="#1040a0"/>
+      <line x1="71" y1="56" x2="55" y2="48" stroke="#4d96ff" stroke-width="2"/>
+      <line x1="89" y1="56" x2="105" y2="48" stroke="#4d96ff" stroke-width="2"/>
+      <text x="44" y="46" font-size="14">🎭</text>
+      <text x="100" y="46" font-size="14">🎭</text>`},
+    'R-O-A-G': {col1:'#8884a8',col2:'#5a5878',hair:'#1a1820',bg:'#080810',
+      extra:`<polygon points="80,32 97,52 63,52" fill="#1a1820"/>
+      <rect x="72" y="52" width="16" height="18" fill="#8884a8"/>
+      <polygon points="72,52 88,52 91,70 69,70" fill="#5a5878"/>
+      <rect x="75" y="70" width="5" height="22" fill="#3a3858"/>
+      <rect x="80" y="70" width="5" height="22" fill="#3a3858"/>
+      <line x1="72" y1="58" x2="58" y2="65" stroke="#8884a8" stroke-width="2"/>
+      <line x1="88" y1="58" x2="102" y2="65" stroke="#8884a8" stroke-width="2"/>
+      <text x="73" y="24" font-size="14" text-anchor="middle">🌙</text>`},
+    'R-O-A-P': {col1:'#7ee8b5',col2:'#40b070',hair:'#1a2a1a',bg:'#001510',
+      extra:`<polygon points="80,32 96,52 64,52" fill="#1a2a1a"/>
+      <rect x="72" y="52" width="16" height="18" fill="#7ee8b5"/>
+      <polygon points="72,52 88,52 91,70 69,70" fill="#40b070"/>
+      <rect x="75" y="70" width="5" height="22" fill="#208050"/>
+      <rect x="80" y="70" width="5" height="22" fill="#208050"/>
+      <line x1="72" y1="58" x2="52" y2="52" stroke="#7ee8b5" stroke-width="2"/>
+      <line x1="88" y1="58" x2="108" y2="52" stroke="#7ee8b5" stroke-width="2"/>
+      <text x="38" y="50" font-size="14">🪴</text>
+      <text x="100" y="50" font-size="14">🪴</text>`},
+    'R-M-S-G': {col1:'#c77dff',col2:'#9050c0',hair:'#0a0a1a',bg:'#100018',
+      extra:`<polygon points="80,30 100,52 60,52" fill="#0a0a1a"/>
+      <rect x="71" y="52" width="18" height="20" fill="#c77dff"/>
+      <polygon points="71,52 89,52 93,72 67,72" fill="#9050c0"/>
+      <rect x="75" y="72" width="5" height="22" fill="#7030a0"/>
+      <rect x="80" y="72" width="5" height="22" fill="#7030a0"/>
+      <line x1="71" y1="58" x2="55" y2="50" stroke="#c77dff" stroke-width="2.5"/>
+      <line x1="89" y1="58" x2="105" y2="50" stroke="#c77dff" stroke-width="2.5"/>
+      <text x="80" y="22" font-size="14" text-anchor="middle">🔮</text>`},
+    'R-M-S-P': {col1:'#ff9f43',col2:'#c06820',hair:'#050510',bg:'#150800',
+      extra:`<polygon points="80,28 102,50 58,50" fill="#050510"/>
+      <rect x="71" y="50" width="18" height="20" fill="#ff9f43"/>
+      <polygon points="71,50 89,50 93,70 67,70" fill="#c06820"/>
+      <rect x="75" y="70" width="5" height="22" fill="#a04810"/>
+      <rect x="80" y="70" width="5" height="22" fill="#a04810"/>
+      <line x1="71" y1="56" x2="50" y2="48" stroke="#ff9f43" stroke-width="2"/>
+      <line x1="89" y1="56" x2="110" y2="48" stroke="#ff9f43" stroke-width="2"/>
+      <text x="37" y="45" font-size="13">✨</text>
+      <text x="103" y="45" font-size="13">💫</text>
+      <text x="72" y="20" font-size="13">🌈</text>`},
+    'R-M-A-G': {col1:'#ee7e9a',col2:'#b04060',hair:'#1a0a14',bg:'#150008',
+      extra:`<polygon points="80,32 98,52 62,52" fill="#1a0a14"/>
+      <rect x="71" y="52" width="18" height="20" fill="#ee7e9a"/>
+      <polygon points="71,52 89,52 93,72 67,72" fill="#b04060"/>
+      <rect x="75" y="72" width="5" height="22" fill="#902040"/>
+      <rect x="80" y="72" width="5" height="22" fill="#902040"/>
+      <line x1="71" y1="58" x2="57" y2="65" stroke="#ee7e9a" stroke-width="2"/>
+      <line x1="89" y1="58" x2="103" y2="65" stroke="#ee7e9a" stroke-width="2"/>
+      <text x="58" y="38" font-size="14">📖</text>`},
+    'R-M-A-P': {col1:'#4d96ff',col2:'#2060c0',hair:'#080818',bg:'#000518',
+      extra:`<polygon points="80,28 104,52 56,52" fill="#080818"/>
+      <rect x="70" y="52" width="20" height="22" fill="#4d96ff"/>
+      <polygon points="70,52 90,52 95,74 65,74" fill="#2060c0"/>
+      <rect x="74" y="74" width="5" height="22" fill="#1040a0"/>
+      <rect x="81" y="74" width="5" height="22" fill="#1040a0"/>
+      <line x1="70" y1="60" x2="46" y2="52" stroke="#4d96ff" stroke-width="2"/>
+      <line x1="90" y1="60" x2="114" y2="52" stroke="#4d96ff" stroke-width="2"/>
+      <text x="32" y="50" font-size="12">🫂</text>
+      <text x="107" y="50" font-size="12">🫂</text>
+      <text x="56" y="22" font-size="11">🌌</text>
+      <text x="88" y="22" font-size="11">🌌</text>`},
+  };
+  const f = figs[type] || figs['C-O-S-G'];
+  return `
+    <rect width="160" height="200" fill="${f.bg}" rx="16"/>
+    <text x="80" y="170" text-anchor="middle" font-size="12" fill="${f.col2}" font-family="monospace">${type}</text>
+    ${f.extra}
+    <circle cx="80" cy="44" r="13" fill="none" stroke="${f.col1}" stroke-width="1.5" opacity="0.4"/>
+  `;
+}
+
+const TYPES = {
+'C-O-S-G':{
+  cn:'坚定二元纯爱战士', en:'The Binary Loyalist',
+  moto:{zh:'"我是男/女同性恋，这辈子只爱一个人。不忠就分手。"',en:'"Gay or straight, monogamous, always. Unfaithful? The door\'s that way."'},
+  desc:{zh:'你是彩虹谱系里最像MBTI直人测试结果的那种存在——方向明确，边界清晰，排他性强到吓人。你在gay吧里拒绝所有搭讪，因为"我有男朋友了"。手机屏保是伴侣照片，朋友圈全是秀恩爱。朋友们让你来做这个测试纯属好奇，你做完了，结果毫无悬念，然后转发给伴侣说"看，我就说我是正常人吧"——ta回复了一个翻白眼的表情。',
+       en:'You are the most MBTI-straight person in the rainbow spectrum. Clear direction, hard limits, monogamy enforced like a terms-of-service agreement. You declined three flirtatious texts tonight because "I have a boyfriend." Your phone wallpaper is your partner\'s face. You took this test purely to confirm what you already knew.'},
+  dims:{CR:{zh:'你的性别表达在规范内——不是因为你没想过打破它，而是因为你已经有太多事情要忠诚了。',en:'Your gender expression stays within norms — not because you\'ve never questioned them, but because you\'re already loyal to enough things.'},OM:{zh:'吸引方向固定，从来没有例外，感谢发问。',en:'Attraction is fixed and single-directional. No exceptions. Thanks for asking.'},SA:{zh:'性对你很重要，是关系里的核心语言之一，缺少了会有真实的缺憾感。',en:'Sex matters to you — it\'s a primary intimacy language. Its absence creates real longing.'},GP:{zh:'一对一是你的安全感结构，不是限制，是选择。',en:'Monogamy is your security architecture. Not a constraint — a choice.'}}},
+'C-O-S-P':{
+  cn:'单性别端水大师', en:'The Single-Gender Juggler',
+  moto:{zh:'"我只喜欢男的，但可以同时喜欢好几个。爱不是除法。"',en:'"Only into guys, but I can like multiple at once. Love isn\'t division."'},
+  desc:{zh:'方向非常固定（就那一种性别，感谢发问），但关系数量不设上限。时间管理精确到小时，情人节给不同人送不同颜色的同款内裤。被问"你怎么还没定下来"时答："我在认真考虑所有候选人。"口头禅："我爱的是男人这个物种，不是某一个具体的个体。"',
+       en:'Direction: fixed (one gender only, thanks). Quantity: unspecified. You manage a relationship portfolio like a venture capitalist — diversified, strategic, never over-committed. Time-blocking is your love language.'},
+  dims:{CR:{zh:'打扮合规，这不是你需要用来表达的维度。',en:'You dress conventionally — this isn\'t the dimension you use for self-expression.'},OM:{zh:'吸引对象只有一种性别，非常确定，不需要再想。',en:'Attracted to one gender only. Very certain. Done.'},SA:{zh:'性是你维持多段关系的核心动力之一。',en:'Sex is central to why multiple connections work for you.'},GP:{zh:'你不认为同时喜欢多个人有什么道德问题，前提是诚实。',en:'No moral issue with multi-dating — transparency is the only requirement.'}}},
+'C-O-A-G':{
+  cn:'无性单性恋守望者', en:'The Platonic Devotee',
+  moto:{zh:'"我只喜欢女的，但我不碰她们。灵魂交融才是真正的亲密。"',en:'"Only women, but I don\'t touch them. Soul-merging is the real intimacy."'},
+  desc:{zh:'暗恋一个女生三年，每天送早餐、帮写论文，对方以为ta只是个超级好的朋友。某天女生喝醉了主动亲了ta，ta吓得原地转移话题说"对了你这周作业交了吗"。精神恋爱是永恒的，身体接触是一个需要另行讨论的话题——可能永远不会讨论。',
+       en:'Three-year crush. Daily breakfast deliveries. The object of your affection thinks you\'re just "a really good friend." One night she tried to kiss you and you pivoted to asking about her homework deadline.'},
+  dims:{CR:{zh:'性别表达合规，你的革命发生在精神层面，不在外表上。',en:'Gender-conforming exterior. Your revolution happens internally.'},OM:{zh:'只被一种性别吸引，非常清晰。',en:'Attracted to one gender only. Very clear.'},SA:{zh:'性对你来说不在亲密关系的必要清单上。你不是冰冷的——你只是用另一种语言爱人。',en:'Sex isn\'t on your intimacy checklist. You\'re not cold — you speak a different love language.'},GP:{zh:'一对一让你感到专注和真实，不是限制。',en:'Monogamy feels like focus, not a constraint.'}}},
+'C-O-A-P':{
+  cn:'无性单性恋多人情绪管家', en:'The Platonic Polyamory Provider',
+  moto:{zh:'"我只对女生有感觉（精神上），但我是你们所有人的情感基础设施。"',en:'"Romantically women-only (spiritually), but I\'m everyone\'s emotional infrastructure."'},
+  desc:{zh:'同时照顾三个同性朋友的全部情绪需求：陪哭、陪逛街、凌晨三点接电话、帮删前任的聊天记录。谁想进一步ta就躲。被朋友问"你到底喜不喜欢我"时答："我照顾你比我照顾我自己还好，你说呢？"',
+       en:'You simultaneously manage the complete emotional needs of three people. You\'re there for every breakdown, every heartbreak, every 3am call. The moment someone wants more, you vanish. When asked "do you like me?" you say "I take care of you better than I take care of myself — you tell me."'},
+  dims:{CR:{zh:'外表合规，内心是一个无所不包的情感服务平台。',en:'Conforming exterior. Internally, an all-encompassing emotional service platform.'},OM:{zh:'只有一种性别能让你产生浪漫感，这一点非常清楚。',en:'Only one gender produces romantic feelings. Very clear.'},SA:{zh:'不需要性来感受连接，情感共鸣是你全部的亲密语言。',en:'No sex needed to feel connected. Emotional resonance is your entire intimacy vocabulary.'},GP:{zh:'你可以同时爱多人，而且不觉得这有问题——只要是情感上的爱。',en:'You can love multiple people simultaneously — as long as it stays emotional.'}}},
+'C-M-S-G':{
+  cn:'双/泛性恋忠诚单偶者', en:'The Loyal Bi',
+  moto:{zh:'"男女通吃，但一次只爱一个。我的取向是流动的，但我的忠诚不是。"',en:'"Attracted to multiple genders, but loyal to one. Orientation: fluid. Loyalty: bedrock."'},
+  desc:{zh:'上半年和男生同居，下半年和女生同居，每段都全情投入排他。被骂过"双性恋不能专一"，气得当场写了三千字辩驳文章并且发到了三个群里。现在随身携带这篇文章的截图以备随时放大给质疑者看。',
+       en:'You\'ve dated across genders with full-hearted exclusivity each time. You\'ve been told "bis can\'t be faithful" and you wrote a 3,000-word rebuttal that you keep saved as a screenshot. You will share it without hesitation.'},
+  dims:{CR:{zh:'性别表达在规范内，打破规范不是你选择的战场。',en:'Gender-conforming. Breaking norms isn\'t your chosen battleground.'},OM:{zh:'吸引不被性别锁定，但每段关系你都认认真真。',en:'Attraction crosses genders, but every relationship is fully committed.'},SA:{zh:'性是你感受亲密连接的重要语言。',en:'Sex is an important intimacy language for you.'},GP:{zh:'一对一是你给伴侣的承诺，不是性别问题，是忠诚问题。',en:'Monogamy is your commitment to your partner. Not a gender question — a loyalty one.'}}},
+'C-M-S-P':{
+  cn:'双/泛性恋多元能量体', en:'The Pansexual Portfolio Manager',
+  moto:{zh:'"男女都行，而且可以同时来。爱不是除法，是乘法。"',en:'"All genders welcome, multiple relationships possible. Love multiplies, it doesn\'t divide."'},
+  desc:{zh:'同时与一男一女维持知情同意的多元关系，三个人一起看电影、吃火锅、偶尔一起出游。ta负责协调时间表和情绪管理。被朋友问"你累不累"时答："单恋一个人才更累，你不懂。"',
+       en:'You maintain consensual multi-gender relationships simultaneously. You manage the shared calendar, the emotional check-ins, the group dynamic. When friends ask "aren\'t you exhausted?" you reply: "Loving only one person is exhausting. You just don\'t know it yet."'},
+  dims:{CR:{zh:'打扮在规范内，你的开放性体现在关系结构上，不在外表上。',en:'Conventionally dressed. Your expansiveness lives in relationship structure, not appearance.'},OM:{zh:'不被任何性别限定，对人的吸引力是全方位的。',en:'Not limited by gender. Attraction is omnidirectional.'},SA:{zh:'性是你感受彼此的重要方式，不可缺少。',en:'Sex is essential to how you connect. Non-negotiable.'},GP:{zh:'多元关系是你的自然状态，透明和诚实是前提。',en:'Polyamory is your natural state. Transparency is the only rule.'}}},
+'C-M-A-G':{
+  cn:'双浪漫无性单偶者', en:'The Genderblind Romantic',
+  moto:{zh:'"我能对男女都动心，但不需要性，一次只爱一个。我的心像候鸟。"',en:'"Attracted to any gender romantically, no sex needed, one at a time. My heart migrates."'},
+  desc:{zh:'每两三年换一个灵魂伴侣（无性），性别随机，每次都像全新的人生开始。前任们都觉得ta是史上最好的伴侣，然后悲伤地发现这段关系里一直没有性，而ta对此毫无遗憾。口头禅："我们不是分手，我们是完成了彼此。"',
+       en:'Every few years, a new soul-partner — different gender each time, always no sex. Every ex says you were the best partner they ever had, then gradually realizes the relationship was entirely platonic and you have zero regrets about that.'},
+  dims:{CR:{zh:'外表合规，你的内心比外表复杂得多。',en:'Conforming on the outside. Far more complex on the inside.'},OM:{zh:'精神上的吸引不被性别限定，但每次只专注一个人。',en:'Romantic attraction crosses all genders — but one at a time.'},SA:{zh:'性对你无所谓——不是缺失，是你的浪漫语言里本来就没有这个词。',en:'Sex is irrelevant — not missing, just not in your romantic vocabulary.'},GP:{zh:'一对一的专注感是你的自然选择。',en:'One-at-a-time focus is your natural mode.'}}},
+'C-M-A-P':{
+  cn:'泛浪漫无性多元连接者', en:'The Communal Heart',
+  moto:{zh:'"我能对所有人动心（无性），同时爱多个。我们是一个情感公社。"',en:'"Romantically open to all genders, no sex, multiple loves. We\'re an emotional commune."'},
+  desc:{zh:'和三个人保持"比朋友多一点"的关系：一个陪吃饭，一个陪旅行，一个陪深夜崩溃。没有性，没有嫉妒，只有温暖绵延的纠缠。新朋友问"你们是什么关系"，所有人一起回答："情感公社。"',
+       en:'You maintain three "more-than-friends" relationships simultaneously: one for meals, one for travel, one for 3am breakdowns. No sex. No jealousy. Just warmth and entanglement. New people ask "so what are you all?" Everyone answers in unison: "An emotional commune."'},
+  dims:{CR:{zh:'外表合规，内心是一个温暖的多节点情感网络。',en:'Conforming appearance. Internally, a warm multi-node emotional network.'},OM:{zh:'不被任何性别限定，精神吸引是全方位的。',en:'Romantically open to all genders. Spiritually omnidirectional.'},SA:{zh:'不需要性，情感陪伴是你全部的亲密语言。',en:'No need for sex. Emotional companionship is your entire intimacy language.'},GP:{zh:'多元关系是你的自然状态，爱可以分享，不会变少。',en:'Poly is your nature. Love shared doesn\'t diminish.'}}},
+'R-O-S-G':{
+  cn:'出格单性恋单偶者', en:'The Rebel Loyalist',
+  moto:{zh:'"我只爱男/女，但我不按性别规范打扮。我变的是皮肤，不变的是输出。"',en:'"One gender only, but I dress how I want. The aesthetic changes; the attraction doesn\'t."'},
+  desc:{zh:'今天穿裙子，明天穿工装，后天把两个都穿上。但伴侣类型从来不变。路人以为ta是非二元，其实ta只是不觉得"打扮合规"是他/她的义务。被问"你到底是什么"时答："我是你伴侣，今天穿裙子版本。"',
+       en:'Skirt today, cargo pants tomorrow, both at once on Sunday. But your attraction? Locked in. People assume you\'re non-binary — you\'re just someone who never felt obligated to dress for a gender. When asked "what are you exactly?" you say: "Your partner, skirt edition."'},
+  dims:{CR:{zh:'你主动打破性别规范，这是你选择的表达方式。',en:'You actively break gender norms. This is your chosen expression.'},OM:{zh:'只被一种性别吸引，这一点在你所有的出格里是稳定的锚点。',en:'Attracted to one gender. This is the stable anchor in all your chaos.'},SA:{zh:'性对你很重要，你用各种方式表达自己，床上也不例外。',en:'Sex matters to you. You express yourself fully in every context, including intimate ones.'},GP:{zh:'一对一，排他，这是你的承诺。',en:'Monogamous and exclusive. That\'s your commitment.'}}},
+'R-O-S-P':{
+  cn:'出格单性恋多元者', en:'The Chameleon Collector',
+  moto:{zh:'"我的打扮随便，但我只睡一类人，可以同时睡多个。我不是渣，我是千面佛。"',en:'"I dress how I want, attracted to one type, dating multiples. Not a player — a multifaceted deity."'},
+  desc:{zh:'性别表达每天不同，但被吸引的类型从来不变（比如只喜欢壮熊，或只喜欢御姐）。同时和几个喜欢的人约会，每个对象都以为ta是不同的人，因为ta今天是A版本，明天是B版本。口头禅："我的人格是表演性的，但我的吸引力是真实的。"',
+       en:'Your presentation shifts daily, but your type is locked in. Currently dating three, each experiencing a different facet of you. "You seem different today." "I\'m always different. That\'s the feature."'},
+  dims:{CR:{zh:'你主动打破性别规范，每天都是不同的版本。',en:'You break gender norms actively. Every day is a new edition.'},OM:{zh:'吸引对象固定（虽然不一定是性别，而是类型），这一点很一致。',en:'Attraction is fixed to a type — consistent even within your chaos.'},SA:{zh:'性是你感受连接的核心方式。',en:'Sex is central to how you connect.'},GP:{zh:'多元关系是你的自然状态，知情同意是前提。',en:'Multiple relationships feel natural. Consent is the only rule.'}}},
+'R-O-A-G':{
+  cn:'出格无性单性恋守望者', en:'The Aesthetic Monk',
+  moto:{zh:'"我的性别表达是谜，我只爱一种性别，不需要性，一次一个。都是，都不是，但我在。"',en:'"My gender is a riddle. One gender only. No sex. One at a time. I\'m here, that\'s all."'},
+  desc:{zh:'外表让所有人困惑，但内心非常清楚自己喜欢谁（就一种性别）。每隔几年对某个人产生强烈的精神依恋，关系里没有性，但有深刻的存在感。对方问"你到底是男是女"，ta答："都是，都不是，但今天你归我。"',
+       en:'Your appearance confuses everyone. Your internal clarity is unshakeable. Deep spiritual attachment to one gender, one person at a time, never sexual. When asked "what gender are you?" you say: "Both, neither, but tonight I\'m yours."'},
+  dims:{CR:{zh:'你打破性别规范，这是你存在方式的一部分。',en:'You break gender norms. It\'s part of how you exist.'},OM:{zh:'只被一种性别吸引，尽管你自己的性别是流动的。',en:'Attracted to one gender — despite your own fluid presentation.'},SA:{zh:'性对你来说不必要，精神陪伴是唯一的亲密需求。',en:'Sex unnecessary. Spiritual companionship is your only intimacy need.'},GP:{zh:'一对一让你感到专注和真实。',en:'One-at-a-time feels focused and genuine.'}}},
+'R-O-A-P':{
+  cn:'出格无性多元灵魂团', en:'The Platonic Rebel Commune',
+  moto:{zh:'"我只被一种性别精神吸引，同时爱多个，不上床。我们是一株多肉，彼此提供水分。"',en:'"Spiritually one-gender-only, loving multiple, no sex. We\'re succulents sharing a root system."'},
+  desc:{zh:'和三个同性维持灵魂姐妹/兄弟关系，一起租房、养猫、分享彼此的崩溃时刻。自己的打扮每天都在出格，但爱的方向从来不变。朋友问"你们谁喜欢谁"，所有人说："我们是一株多肉，请不要分开盆栽。"',
+       en:'Three same-gender soul-bonds. Shared apartment, shared cat, shared breakdowns. Your appearance breaks every norm daily, but your love direction never wavers. When asked who likes whom: "We\'re a succulent. Don\'t try to repot us separately."'},
+  dims:{CR:{zh:'你打破性别规范，你的存在本身就是一种声明。',en:'You break norms. Your existence is the statement.'},OM:{zh:'只有一种性别能在精神上吸引你，这一点稳定如磐石。',en:'Only one gender produces spiritual attraction. Stable as bedrock.'},SA:{zh:'不需要性，精神陪伴是你全部的亲密需求。',en:'No sex needed. Spiritual companionship is everything.'},GP:{zh:'多元爱是你的自然状态，无嫉妒，只有温暖。',en:'Plural love is your nature. No jealousy, only warmth.'}}},
+'R-M-S-G':{
+  cn:'泛性别表达泛性恋单偶变色龙', en:'The Chameleon Monogamist',
+  moto:{zh:'"我的性别和对方的性别都不重要，一次只爱一个人。我变成你喜欢的样子，但你喜欢的是我吗？"',en:'"Neither my gender nor yours matters. One at a time. I become what you love — but do you love me?"'},
+  desc:{zh:'每段关系都像重启人生：和A在一起时是一种风格，和B在一起时是完全不同的样子。分手后朋友认不出ta。口头禅："我是一面镜子，但我也是镜子后面的人——你有没有好奇过那个人是谁？"',
+       en:'Every relationship is a system reboot. You become a different aesthetic with each partner. After breakups your friends don\'t recognize you. "I\'m a mirror — but I\'m also the person behind it. Have you ever wondered who that is?"'},
+  dims:{CR:{zh:'你打破性别规范，这是你身份表达的核心。',en:'You break gender norms. It\'s your identity\'s core language.'},OM:{zh:'任何性别都可能吸引你，你爱的是人本身。',en:'Any gender. You love the person, not the category.'},SA:{zh:'性对你很重要，是感受彼此真实存在的方式。',en:'Sex is important — it\'s how you feel each other\'s realness.'},GP:{zh:'即使面对如此复杂的身份，你仍然选择一对一——这是你的专注仪式。',en:'Despite the complexity, you choose one-at-a-time. Monogamy is your focus ritual.'}}},
+'R-M-S-P':{
+  cn:'泛性别泛性恋多元宇宙体', en:'The Infinite Universe',
+  moto:{zh:'"百无禁忌，同时爱所有人。标签是罐头，我是新鲜空气。"',en:'"No limits, loving everyone simultaneously. Labels are cans. I\'m fresh air."'},
+  desc:{zh:'同时与男人、女人、非二元约会，自己的性别表达每天不同。在所有场合如鱼得水，昨天是他，今天是她，明天是那个用it/its的朋友，后天仨一起吃火锅。第二天说"我昨晚感觉我和整个宇宙谈了个恋爱"。',
+       en:'Dating across every gender simultaneously. Your own expression shifts daily. Yesterday you were him, today her, tomorrow you\'re having hotpot with all three. "I feel like I dated the entire universe last night." You probably did.'},
+  dims:{CR:{zh:'你彻底打破性别规范，而且你以此为乐。',en:'You obliterate gender norms and genuinely enjoy doing so.'},OM:{zh:'不被任何性别限定，对人的吸引力是全方位开放的。',en:'Unlimited attraction. All genders. All people.'},SA:{zh:'性是你体验亲密和连接的核心语言。',en:'Sex is central to how you experience connection.'},GP:{zh:'多元关系是你的存在方式，不是选择。',en:'Polyamory isn\'t a choice — it\'s how you exist.'}}},
+'R-M-A-G':{
+  cn:'泛浪漫无性单偶守护者', en:'The Silent Devoted',
+  moto:{zh:'"我能被任何性别精神吸引，但一次只专注一个，不上床。我爱你，与你无关。"',en:'"Romantically open to all genders, one at a time, no sex. I love you — that has nothing to do with you."'},
+  desc:{zh:'每几年遇到一个"灵魂地震"，对方性别随机，关系无性。会为对方写诗、偷偷画画像，但绝不表白——怕说出来反而失去那种微妙的平衡。对方结婚了ta还默默送了一束花，没有署名。口头禅："爱是一种存在状态，不是一种交换。"',
+       en:'Every few years, a soul-earthquake arrives in an unpredictable gender. You write poems. You sketch their face in private. You never confess — it would ruin the balance. They got married; you sent flowers anonymously.'},
+  dims:{CR:{zh:'你打破性别规范，这是你对这个世界的回应方式。',en:'You break gender norms. It\'s how you respond to the world.'},OM:{zh:'精神上对所有性别开放，你爱的是灵魂本身。',en:'Spiritually open to all genders. You love souls, not bodies.'},SA:{zh:'性不在你的亲密需求里，情感共鸣是唯一的必需品。',en:'Sex is absent from your intimacy needs. Emotional resonance is the only requirement.'},GP:{zh:'每次只专注一个人，这是你爱的仪式感。',en:'One at a time. This is your love ritual.'}}},
+'R-M-A-P':{
+  cn:'泛浪漫无性多元宇宙命运共同体', en:'The Cosmic Commune',
+  moto:{zh:'"我能同时和所有人精神恋爱，不上床。别问，问就是命运共同体。"',en:'"Spiritually in love with everyone simultaneously. No sex. Don\'t ask — we\'re a cosmic commune."'},
+  desc:{zh:'和五个不同性别、不同背景的人住在一起，共用洗衣机、一起做饭、偶尔集体抱头痛哭，没有人定义关系。自己的性别表达每天都在打破规范。新朋友问"你们谁和谁是一对"，所有人异口同声："我们是命运共同体，请不要用人类的恋爱逻辑解释我们。"',
+       en:'Five housemates, different genders, shared laundry, communal cooking, occasional group crying. No defined relationships. Your gender changes daily. New visitors ask "who\'s dating who?" Everyone answers: "We\'re a cosmic commune. Human relationship logic doesn\'t apply here."'},
+  dims:{CR:{zh:'你彻底打破性别规范，你的存在是对所有规范的温柔颠覆。',en:'You obliterate gender norms. Your existence is a gentle subversion of everything.'},OM:{zh:'对所有性别开放，精神吸引无边界。',en:'Spiritually open to all genders. No boundaries on attraction.'},SA:{zh:'不需要性，情感的缠绕和陪伴才是你的亲密语言。',en:'No sex needed. Emotional entanglement and companionship are your language.'},GP:{zh:'多元关系不是你的选择，是你的存在方式。',en:'Polyamory isn\'t chosen — it\'s how you exist.'}}},
+};
+
+const DIM_META = {
+  CR:{zh:'性别表达方式',en:'Gender Expression'},
+  OM:{zh:'吸引性别范围',en:'Attraction Range'},
+  SA:{zh:'欲望类型',en:'Desire Type'},
+  GP:{zh:'关系结构',en:'Relationship Structure'},
+};
+
+
+// ── LANG ──
+let lang = "zh";
+function t(key) { return I18N[key] ? (I18N[key][lang] || I18N[key].zh) : key; }
+
+function setLang(l) {
+  lang = l;
+  document.getElementById("btn-zh").classList.toggle("active", l === "zh");
+  document.getElementById("btn-en").classList.toggle("active", l === "en");
+  document.documentElement.lang = l === "zh" ? "zh-CN" : "en";
+  Object.keys(I18N).forEach(function(key) {
+    var el = document.getElementById(key);
+    if (!el) return;
+    if (key === "hero-title" || key === "straight-note") el.innerHTML = t(key);
+    else el.textContent = t(key);
+  });
+  if (screens.test.classList.contains("active")) renderQuestions();
+  if (screens.result.classList.contains("active") && _lastResult) renderResult();
+}
+
+// ── APP STATE ──
+var app = { answers: {}, shuffled: [] };
+var _lastResult = null;
+
+var screens = {
+  intro:  document.getElementById("intro"),
+  test:   document.getElementById("test"),
+  result: document.getElementById("result")
+};
+
+function showScreen(name) {
+  Object.keys(screens).forEach(function(k) {
+    screens[k].classList.toggle("active", k === name);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function renderQuestions() {
+  var list = document.getElementById("questionList");
+  list.innerHTML = "";
+  app.shuffled.forEach(function(q, idx) {
+    var card = document.createElement("article");
+    card.className = "question" + (app.answers[q.id] !== undefined ? " answered" : "");
+    var dimLabel = DIM_META[q.dim] ? (lang === "zh" ? DIM_META[q.dim].zh : DIM_META[q.dim].en) : "";
+    var qText = q[lang] || q.zh;
+    var opts = q.opts.map(function(opt, i) {
+      var code = ["A","B","C"][i];
+      var checked = app.answers[q.id] === opt.v ? " checked" : "";
+      var sel = app.answers[q.id] === opt.v ? " selected" : "";
+      var optText = opt[lang] || opt.zh;
+      return '<label class="option' + sel + '">' +
+        '<input type="radio" name="' + q.id + '" value="' + opt.v + '"' + checked + '>' +
+        '<span class="option-code">' + code + '</span>' +
+        '<span class="option-text">' + optText + '</span>' +
+        '</label>';
+    }).join("");
+    card.innerHTML =
+      '<div class="question-meta">' +
+        '<div class="badge">' + (lang === "zh" ? "第" : "") + (idx+1) + (lang === "zh" ? "题" : "") + '</div>' +
+        '<div>' + dimLabel + '</div>' +
+      '</div>' +
+      '<div class="question-title">' + qText + '</div>' +
+      '<div class="options">' + opts + '</div>';
+    list.appendChild(card);
+  });
+
+  list.querySelectorAll('input[type=radio]').forEach(function(input) {
+    input.addEventListener("change", function(e) {
+      app.answers[e.target.name] = Number(e.target.value);
+      var card = e.target.closest(".question");
+      card.classList.add("answered");
+      card.querySelectorAll(".option").forEach(function(o) { o.classList.remove("selected"); });
+      e.target.closest(".option").classList.add("selected");
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  var total = app.shuffled.length;
+  var done = app.shuffled.filter(function(q) { return app.answers[q.id] !== undefined; }).length;
+  var pct = total ? (done / total) * 100 : 0;
+  document.getElementById("progressBar").style.width = pct + "%";
+  document.getElementById("progressText").textContent = done + " / " + total;
+  var complete = done === total && total > 0;
+  document.getElementById("submitBtn").disabled = !complete;
+  document.getElementById("testHint").textContent = complete ? t("testHintDone") : t("testHint");
+}
+
+function computeResult() {
+  var sums = { CR:0, OM:0, SA:0, GP:0 };
+  var counts = { CR:0, OM:0, SA:0, GP:0 };
+  app.shuffled.forEach(function(q) {
+    if (app.answers[q.id] !== undefined) {
+      sums[q.dim] += app.answers[q.id];
+      counts[q.dim]++;
+    }
+  });
+  var letters = {};
+  ["CR","OM","SA","GP"].forEach(function(dim) {
+    var avg = sums[dim] / (counts[dim] || 1);
+    letters[dim] = avg < 2.1 ? dim[0] : dim[1];
+  });
+  return {
+    code: letters.CR + "-" + letters.OM + "-" + letters.SA + "-" + letters.GP,
+    letters: letters, sums: sums, counts: counts
+  };
+}
+
+function renderResult() {
+  var res = computeResult();
+  var code = res.code, letters = res.letters, sums = res.sums, counts = res.counts;
+  var type = TYPES[code] || TYPES["C-O-S-G"];
+
+  document.getElementById("resultFigure").innerHTML = makeFigure(code);
+  document.getElementById("posterCaption").textContent = lang === "zh" ? type.cn : type.en;
+  document.getElementById("resultModeKicker").textContent = t("resultModeKicker");
+  document.getElementById("resultTypeName").textContent = code + "（" + type.cn + "）";
+  document.getElementById("resultTypeEN").textContent = type.en;
+  document.getElementById("matchBadge").textContent = "🏳️‍🌈 " + code + " · " + (lang === "zh" ? "四维度已锁定" : "All four dimensions locked");
+
+  var motoEl = document.getElementById("resultMoto");
+  if (lang === "zh") {
+    motoEl.innerHTML = type.moto.zh + '<span class="moto-en">' + type.moto.en + '</span>';
+  } else {
+    motoEl.textContent = type.moto.en;
+  }
+
+  document.getElementById("resultDesc").textContent = lang === "zh" ? type.desc.zh : type.desc.en;
+
+  var dimList = document.getElementById("dimList");
+  dimList.innerHTML = ["CR","OM","SA","GP"].map(function(dim) {
+    var letter = letters[dim];
+    var avg = sums[dim] / (counts[dim] || 1);
+    var pct = Math.round(((avg - 1) / 2) * 100);
+    var dimName = DIM_META[dim] ? (lang === "zh" ? DIM_META[dim].zh : DIM_META[dim].en) : dim;
+    var dimDesc = type.dims[dim] ? (lang === "zh" ? type.dims[dim].zh : type.dims[dim].en) : "";
+    var leftL = dim[0], rightL = dim[1];
+    return '<div class="dim-item">' +
+      '<div class="dim-item-top">' +
+        '<div class="dim-item-name">' + dimName + '</div>' +
+        '<div class="dim-item-score">' + letter + ' · ' + leftL + '←' + pct + '%→' + rightL + '</div>' +
+      '</div>' +
+      '<p>' + dimDesc + '</p>' +
+    '</div>';
+  }).join("");
+
+  document.getElementById("funNote").textContent = t("funNote");
+  document.getElementById("saveReminder").textContent = t("saveReminder");
+
+  ["analysis-title","dim-title","note-title","follow-title",
+   "fol-discord","fol-x","fol-tiktok","kofi-txt",
+   "author-p1","author-p2","restartBtn","toTopBtn"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = t(id);
+  });
+
+  showScreen("result");
+}
+
+// ── EVENTS ──
+document.getElementById("startBtn").addEventListener("click", function() {
+  app.answers = {};
+  app.shuffled = shuffle(questions);
+  renderQuestions();
+  showScreen("test");
+});
+document.getElementById("backIntroBtn").addEventListener("click", function() { showScreen("intro"); });
+document.getElementById("submitBtn").addEventListener("click", function() { _lastResult = true; renderResult(); });
+document.getElementById("restartBtn").addEventListener("click", function() {
+  app.answers = {};
+  app.shuffled = shuffle(questions);
+  renderQuestions();
+  showScreen("test");
+});
+document.getElementById("toTopBtn").addEventListener("click", function() { showScreen("intro"); });
+
+</script>
+</body>
+</html>

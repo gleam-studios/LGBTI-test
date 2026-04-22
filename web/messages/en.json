@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "title": "Rainbow Elevator",
+    "description": "4 dimensions, 40 questions — find out which species you are on the LGBTQ+ spectrum. 16 results. None of them are normal."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "support": "Support",
+    "toggleLang": "中文",
+    "toggleTheme": "Toggle theme"
+  },
+  "intro": {
+    "eyebrow": "Rainbow Elevator Test",
+    "title": "MBTI is yesterday.<br/><span class=\"rainbow-text\">Rainbow Elevator</span> is here.",
+    "sub": "4 dimensions, 40 questions — find out which species you are on the LGBTQ+ spectrum. 16 results. None of them are normal.",
+    "straight": "Straight folks welcome. Designed for the LGBTQ+ community, but if you are cis-het, come see which dimensions you unexpectedly break the rules on.",
+    "cta": "Start the test",
+    "social": "{count} rainbow souls have taken the test",
+    "scroll": "Scroll for the four dimensions"
+  },
+  "dims": {
+    "CR": { "name": "Gender Expression", "summary": "How far your look steps in or out of mainstream gender norms." },
+    "OM": { "name": "Attraction Range", "summary": "One gender, or a range that shifts with the wind." },
+    "SA": { "name": "Desire Type", "summary": "From burning sexual gravity to the asexual spectrum." },
+    "GP": { "name": "Relationship Structure", "summary": "One-at-a-time focus, or a living constellation of loves." }
+  },
+  "test": {
+    "progress": "{done} / {total}",
+    "hint": "Answer all questions to unlock your result. You are brave enough to be here.",
+    "hintDone": "All done. Time to meet your rainbow verdict.",
+    "back": "Back",
+    "skip": "Skip",
+    "submit": "See my result",
+    "questionLabel": "Question {index}",
+    "optionHint": "Press 1 / 2 / 3 to choose, ← / → to navigate",
+    "resuming": "Your previous progress has been restored.",
+    "restart": "Start over"
+  },
+  "result": {
+    "kicker": "YOUR TYPE",
+    "match": "All four dimensions locked",
+    "analysis": "Type Analysis",
+    "dimsTitle": "Four-Dimension Breakdown",
+    "neighbors": "Closest kin on the spectrum",
+    "noteTitle": "A note",
+    "note": "For entertainment and self-exploration only. Not medical, psychological, or diagnostic guidance. LGBTQ+ identity is complex and beautiful — no test can fully define you. 🏳️‍🌈",
+    "saveTitle": "Save your result",
+    "save": "Want to keep it? Screenshot or long-press. Share with friends to find out what type they are.",
+    "shareTitle": "Share your result",
+    "shareAside": "Share",
+    "share": {
+      "copy": "Copy link",
+      "copied": "Copied!",
+      "x": "Share on X",
+      "rednote": "Share on RedNote",
+      "discord": "Share on Discord",
+      "telegram": "Share on Telegram",
+      "instagram": "Share on Instagram",
+      "instagramHint": "Copies the share text, then opens Instagram (paste in the app to post).",
+      "downloadImage": "Save result",
+      "downloadImageLoading": "Preparing image…",
+      "downloadImageSuccess": "Download started",
+      "downloadImageError": "Couldn’t start download. Opened a new tab — you can save the image from there."
+    },
+    "resultActions": "Result page actions",
+    "adLabel": "Ad",
+    "adDevPlaceholder": "Dev preview: set the env vars below to load a responsive AdSense unit.",
+    "retake": "Retake test",
+    "home": "Back home",
+    "authorTitle": "From the author",
+    "authorExpand": "Expand",
+    "authorCollapse": "Collapse",
+    "authorP1": "This test is a self-exploration tool and icebreaker for the LGBTQ+ community. The four dimensions correspond to core identity questions and carry no medical or psychological judgment.",
+    "authorP2": "If a result does not feel right, that is completely normal — people are far more complex than labels. If you are exploring your identity, seek community support or professional guidance. 🏳️‍🌈",
+    "kofi": "Buy me a coffee",
+    "supportCta": "Questioning your identity? Community & support resources →"
+  },
+  "footer": {
+    "disclaimer": "Entertainment only · Not medical or diagnostic · Never for discrimination",
+    "privacy": "Privacy",
+    "about": "About",
+    "support": "Support",
+    "madeWith": "Made for every rainbow soul"
+  },
+  "common": {
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "loading": "Loading…",
+    "notFoundTitle": "This spot is outside the rainbow",
+    "notFoundDesc": "The page you are looking for does not exist.",
+    "backHome": "Back home"
+  }
+}
