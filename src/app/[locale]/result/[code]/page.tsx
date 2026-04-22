@@ -187,7 +187,7 @@ export default async function ResultPage({
               </Link>
             </div>
           </nav>
-          <div className="min-h-0 w-full min-w-0 flex-1 overflow-x-clip lg:-ml-1 lg:mr-1.5 lg:pr-0.5 xl:-ml-1.5 xl:mr-2">
+          <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col items-center justify-start overflow-x-clip pt-0.5">
             <ShareSheet
               code={code}
               title={name}
