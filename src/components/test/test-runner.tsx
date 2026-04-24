@@ -124,10 +124,18 @@ export function TestRunner({ locale }: Props) {
       });
       // auto-advance unless already at the end
       if (index < total - 1) {
-        window.setTimeout(() => goTo(index + 1), 175);
+        // Use functional state update to avoid stale closure on `index`
+        window.setTimeout(() => {
+          setIndex((prev) => {
+            const next = Math.min(prev + 1, total - 1);
+            setDirection(next >= prev ? 1 : -1);
+            return next;
+          });
+          setShowResumed(false);
+        }, 175);
       }
     },
-    [current.id, goTo, index, syncUrl, total],
+    [current.id, index, syncUrl, total],
   );
 
   const handleRestart = React.useCallback(() => {
