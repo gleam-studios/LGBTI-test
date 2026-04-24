@@ -13,9 +13,12 @@ export async function TypeHero({
   variant?: "default" | "split";
 }) {
   const t = await getTranslations({ locale, namespace: "result" });
-  const name = locale === "zh" ? persona.cn : persona.en;
-  /** 双语副标题：与主标题相反语言，和最初设计一致（zh 主中副英 / en 主英副中） */
-  const subName = locale === "zh" ? persona.en : persona.cn;
+  /**
+   * 与早期静态原型 `rainbow-elevator-v4` 一致：大行是「代号 + 中文名」，小行是英文类型名（每人格固定一句），
+   * 不是「主标题语言 / 副标题语言」对调。
+   */
+  const primaryTitle = `${persona.code}（${persona.cn}）`;
+  const subTitle = persona.en;
   const moto = locale === "zh" ? persona.moto.zh : persona.moto.en;
   const tags = locale === "zh" ? persona.tags.zh : persona.tags.en;
 
@@ -77,19 +80,19 @@ export async function TypeHero({
             size={224}
             priority
             className="h-full w-full object-contain drop-shadow-[0_12px_32px_rgba(20,18,40,0.18)]"
-            alt={`${persona.code} · ${name}`}
+            alt={`${persona.code} · ${persona.cn}`}
           />
         </div>
 
         <div className="text-center sm:text-left">
           <h1
             id="type-title"
-            className="font-display text-balance text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.05] tracking-[-0.035em]"
+            className="font-display text-balance text-[clamp(1.65rem,4.2vw,3rem)] font-semibold leading-[1.08] tracking-[-0.03em] sm:text-[clamp(1.85rem,4.5vw,3.25rem)]"
           >
-            {name}
+            {primaryTitle}
           </h1>
-          <p className="font-display mt-2 text-[17px] italic text-[color:var(--text-muted)] sm:text-[19px]">
-            {subName}
+          <p className="font-display mt-2 text-[15px] italic text-[color:var(--text-muted)] sm:text-[17px]">
+            {subTitle}
           </p>
 
           <ul className="mt-4 flex flex-wrap justify-center gap-1.5 sm:justify-start">
