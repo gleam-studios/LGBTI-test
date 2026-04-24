@@ -14,8 +14,8 @@ export async function TypeHero({
 }) {
   const t = await getTranslations({ locale, namespace: "result" });
   const name = locale === "zh" ? persona.cn : persona.en;
-  /** 仅在中文界面显示英文别名；英文界面不再叠一行中文标题，避免「未翻译」观感 */
-  const alternateName = locale === "zh" ? persona.en : null;
+  /** 中文页只保留主标题（避免副行出现英文类型名）；英文页副行显示中文原名，与主标题英文对照 */
+  const alternateName = locale === "zh" ? null : persona.cn;
   const moto = locale === "zh" ? persona.moto.zh : persona.moto.en;
   const tags = locale === "zh" ? persona.tags.zh : persona.tags.en;
 
