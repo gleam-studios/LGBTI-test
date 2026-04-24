@@ -1,0 +1,4 @@
+# ads.txt for your domain
+# Replace with the content provided by Google AdSense.
+# Example format (adjust to your account):
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

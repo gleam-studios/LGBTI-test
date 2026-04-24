@@ -15,6 +15,11 @@ import { cn, SITE_URL } from "@/lib/utils";
 /** 与 AdSense 后台一致；全站注入一次，用于「验证站点所有权」+ 结果页广告单元 */
 const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
+// 可选：广告位 ID（若未设置则仅加载验证脚本）
+const ADSENSE_SLOT_MID = process.env.NEXT_PUBLIC_ADSENSE_SLOT_MID;
+const ADSENSE_SLOT_RESULT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_RESULT;
+
+
 const fontSans = Inter({
   subsets: ["latin"],
   variable: "--next-font-sans",
