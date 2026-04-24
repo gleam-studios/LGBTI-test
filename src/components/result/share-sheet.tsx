@@ -30,6 +30,24 @@ type DownloadState = "idle" | "loading" | "ok" | "err";
 
 const KOFI_URL = "https://ko-fi.com/lgbtitest";
 
+/**
+ * Lucide `Download` 是 3 条独立 path；对每条分别 `stroke=url(#渐变)` 时，`objectBoundingBox`
+ * 下竖线的包围盒宽度为 0，渐变无效 → 竖线消失。合并为单 path 后共用一个 bbox 即可。
+ */
+function RainbowDownloadStroke({ gradientId }: { gradientId: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
+      <path
+        stroke={`url(#${gradientId})`}
+        strokeWidth={2.25}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 15V3 M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5"
+      />
+    </svg>
+  );
+}
+
 export function ShareSheet({
   code,
   title,
@@ -350,13 +368,7 @@ export function ShareSheet({
                 aria-hidden
               />
             ) : (
-              <Download
-                className="h-5 w-5"
-                stroke={rainbowRef}
-                fill="none"
-                strokeWidth={2.25}
-                aria-hidden
-              />
+              <RainbowDownloadStroke gradientId={rainbowId} />
             )}
           </button>
 
