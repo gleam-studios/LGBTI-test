@@ -13,12 +13,8 @@ export async function TypeHero({
   variant?: "default" | "split";
 }) {
   const t = await getTranslations({ locale, namespace: "result" });
-  /**
-   * 与早期静态原型 `rainbow-elevator-v4` 一致：大行是「代号 + 中文名」，小行是英文类型名（每人格固定一句），
-   * 不是「主标题语言 / 副标题语言」对调。
-   */
-  const primaryTitle = `${persona.code}（${persona.cn}）`;
-  const subTitle = persona.en;
+  /** 标题两行：代号一行 + 当前语言类型名一行（无单独的英文 archetype 副标题） */
+  const localizedName = locale === "zh" ? persona.cn : persona.en;
   const moto = locale === "zh" ? persona.moto.zh : persona.moto.en;
   const tags = locale === "zh" ? persona.tags.zh : persona.tags.en;
 
@@ -80,20 +76,25 @@ export async function TypeHero({
             size={224}
             priority
             className="h-full w-full object-contain drop-shadow-[0_12px_32px_rgba(20,18,40,0.18)]"
-            alt={`${persona.code} · ${persona.cn}`}
+            alt={`${persona.code} · ${localizedName}`}
           />
         </div>
 
         <div className="text-center sm:text-left">
           <h1
             id="type-title"
-            className="font-display text-balance text-[clamp(1.65rem,4.2vw,3rem)] font-semibold leading-[1.08] tracking-[-0.03em] sm:text-[clamp(1.85rem,4.5vw,3.25rem)]"
+            className="font-display text-balance leading-[1.08] text-[color:var(--text)]"
           >
-            {primaryTitle}
+            <span
+              className="block font-mono text-[clamp(1.15rem,2.8vw,1.65rem)] font-semibold tracking-[0.22em]"
+              style={{ color: persona.hue.to }}
+            >
+              {persona.code}
+            </span>
+            <span className="mt-2 block text-[clamp(1.85rem,4.8vw,3.35rem)] font-semibold leading-[1.05] tracking-[-0.035em]">
+              {localizedName}
+            </span>
           </h1>
-          <p className="font-display mt-2 text-[15px] italic text-[color:var(--text-muted)] sm:text-[17px]">
-            {subTitle}
-          </p>
 
           <ul className="mt-4 flex flex-wrap justify-center gap-1.5 sm:justify-start">
             {tags.map((tag) => (
