@@ -1,4 +1,4 @@
-# Rainbow Elevator (Next.js)
+# LGBTI Test (Next.js)
 
 A bilingual (中文 / English) self-exploration test for the LGBTQ+ community.
 4 dimensions · 40 questions · 16 possible persona types. All content is static;

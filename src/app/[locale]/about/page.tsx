@@ -24,8 +24,8 @@ export default async function AboutPage({
       </h1>
       <p className="mt-4 text-[color:var(--text-muted)]">
         {isZh
-          ? `彩虹电梯测试是一个为 LGBTQ+ 社群和任何想探索自己在性别与关系光谱上位置的人设计的自我探索工具。${QUESTION_COUNT} 道题 · 4 个维度 · ${TYPE_CODES.length} 种可能的结果。`
-          : `Rainbow Elevator is a self-exploration tool for the LGBTQ+ community and anyone curious about their position on the gender and relationship spectrum. ${QUESTION_COUNT} questions · 4 dimensions · ${TYPE_CODES.length} possible results.`}
+          ? `LGBTI 测试是一个为 LGBTQ+ 社群和任何想探索自己在性别与关系光谱上位置的人设计的自我探索工具。${QUESTION_COUNT} 道题 · 4 个维度 · ${TYPE_CODES.length} 种可能的结果。`
+          : `LGBTI Test is a self-exploration tool for the LGBTQ+ community and anyone curious about their position on the gender and relationship spectrum. ${QUESTION_COUNT} questions · 4 dimensions · ${TYPE_CODES.length} possible results.`}
       </p>
 
       <h2 className="font-display mt-10 text-2xl font-semibold">

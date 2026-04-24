@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { SITE_URL } from "@/lib/utils";
 import { TYPES, isTypeCode } from "@/lib/types";
 
 export const runtime = "edge";
@@ -16,11 +17,17 @@ export async function GET(
   const p = TYPES[code];
   const name = lang === "zh" ? p.cn : p.en;
   const moto = lang === "zh" ? p.moto.zh : p.moto.en;
-  const tagline =
-    lang === "zh" ? "彩虹电梯测试 · Rainbow Elevator" : "Rainbow Elevator Test";
+  const tagline = lang === "zh" ? "LGBTI 测试" : "LGBTI Test";
 
   const asDownload = url.searchParams.get("download") === "1";
-  const filename = `rainbow-elevator-${code}-${lang}.png`;
+  const filename = `lgbti-test-${code}-${lang}.png`;
+  const siteHost = (() => {
+    try {
+      return new URL(SITE_URL).host;
+    } catch {
+      return "";
+    }
+  })();
 
   return new ImageResponse(
     (
@@ -110,7 +117,7 @@ export async function GET(
             opacity: 0.8,
           }}
         >
-          <span>rainbow-elevator.app</span>
+          <span>{siteHost || "—"}</span>
           <span>
             {lang === "zh" ? "16 种结果，没一种正常。" : "16 results. None normal."}
           </span>

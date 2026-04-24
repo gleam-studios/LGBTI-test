@@ -60,12 +60,12 @@ export function ShareSheet({
   const rainbowId = `re-rainbow-${React.useId().replace(/[:]/g, "")}`;
   const [downloadState, setDownloadState] = React.useState<DownloadState>("idle");
 
-  const filename = `rainbow-elevator-${code}-${locale}.png`;
+  const filename = `lgbti-test-${code}-${locale}.png`;
 
   const caption =
     locale === "zh"
-      ? `我的彩虹电梯类型是 ${code} · ${title}。来测测你是什么型？`
-      : `My Rainbow Elevator type: ${code} · ${title}. What's yours?`;
+      ? `我的 LGBTI 测试结果是 ${code} · ${title}。来测测你是什么型？`
+      : `My LGBTI Test result: ${code} · ${title}. What's yours?`;
 
   const copy = async () => {
     try {

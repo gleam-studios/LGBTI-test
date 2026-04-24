@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { DIMENSIONS, DIMENSION_META, type Dimension } from "@/lib/dimensions";
 
 interface Props {
@@ -11,6 +12,8 @@ interface Props {
   dimensionMap: Dimension[];
   /** answered flags per question */
   answered: boolean[];
+  /** 点击某一格时跳转（0-based 题目下标） */
+  onSeekQuestion?: (zeroBasedIndex: number) => void;
 }
 
 export function RainbowProgress({
@@ -18,7 +21,11 @@ export function RainbowProgress({
   currentIndex,
   dimensionMap,
   answered,
+  onSeekQuestion,
 }: Props) {
+  const t = useTranslations("test");
+  const interactive = typeof onSeekQuestion === "function";
+
   return (
     <div className="flex w-full flex-col gap-2" aria-live="polite">
       <div className="flex items-center justify-between text-xs text-[color:var(--text-muted)]">
@@ -56,10 +63,9 @@ export function RainbowProgress({
           const isCurrent = i === currentIndex - 1;
           const isAnswered = answered[i];
           const isPast = i < currentIndex - 1;
-          return (
+          const bar = (
             <span
-              key={i}
-              className="h-2 flex-1 rounded-full transition-all duration-200"
+              className="block h-2 w-full rounded-full transition-all duration-200"
               style={{
                 background:
                   isAnswered || isPast || isCurrent ? color : "var(--line)",
@@ -68,6 +74,27 @@ export function RainbowProgress({
               }}
               aria-hidden
             />
+          );
+
+          if (!interactive) {
+            return (
+              <span key={i} className="min-w-0 flex-1">
+                {bar}
+              </span>
+            );
+          }
+
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onSeekQuestion!(i)}
+              className="flex min-h-10 min-w-0 flex-1 touch-manipulation cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
+              aria-label={t("progressSeek", { index: i + 1 })}
+              aria-current={isCurrent ? "step" : undefined}
+            >
+              {bar}
+            </button>
           );
         })}
       </div>

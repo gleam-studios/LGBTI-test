@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "Rainbow Elevator",
+    "title": "LGBTI Test",
     "description": "4 dimensions, 40 questions — find out which species you are on the LGBTQ+ spectrum. 16 results. None of them are normal."
   },
   "nav": {
@@ -11,7 +11,7 @@
     "toggleTheme": "Toggle theme"
   },
   "intro": {
-    "eyebrow": "Rainbow Elevator Test",
+    "eyebrow": "LGBTI Test",
     "title": "MBTI is yesterday<br/><span class=\"rainbow-text\">LGBTI</span> is here",
     "sub": "4 dimensions, 40 questions — find out which species you are on the LGBTQ+ spectrum. 16 results. None of them are normal.",
     "straight": "Straight folks welcome. Designed for the LGBTQ+ community, but if you are cis-het, come see which dimensions you unexpectedly break the rules on.",
@@ -35,7 +35,8 @@
     "questionLabel": "Question {index}",
     "optionHint": "Press 1 / 2 / 3 to choose, ← / → to navigate",
     "resuming": "Your previous progress has been restored.",
-    "restart": "Start over"
+    "restart": "Start over",
+    "progressSeek": "Go to question {index}"
   },
   "result": {
     "kicker": "YOUR TYPE",

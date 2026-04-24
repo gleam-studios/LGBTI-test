@@ -48,6 +48,17 @@ export function TestRunner({ locale }: Props) {
   const [index, setIndex] = React.useState(0);
   const [direction, setDirection] = React.useState<1 | -1>(1);
   const [showResumed, setShowResumed] = React.useState(false);
+  /** 浏览器下 setTimeout 返回 number；与 Node 的 Timeout 类型区分 */
+  const autoResultTimerRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (autoResultTimerRef.current) {
+        clearTimeout(autoResultTimerRef.current);
+        autoResultTimerRef.current = null;
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -117,25 +128,33 @@ export function TestRunner({ locale }: Props) {
 
   const handleSelect = React.useCallback(
     (value: 1 | 2 | 3) => {
-      setAnswers((prev) => {
-        const next = { ...prev, [current.id]: value };
-        syncUrl(next);
-        return next;
-      });
-      // auto-advance unless already at the end
-      if (index < total - 1) {
-        // Use functional state update to avoid stale closure on `index`
+      const next = { ...answers, [current.id]: value };
+      setAnswers(next);
+      syncUrl(next);
+
+      const isLast = index >= total - 1;
+      if (!isLast) {
         window.setTimeout(() => {
           setIndex((prev) => {
-            const next = Math.min(prev + 1, total - 1);
-            setDirection(next >= prev ? 1 : -1);
-            return next;
+            const ni = Math.min(prev + 1, total - 1);
+            setDirection(ni >= prev ? 1 : -1);
+            return ni;
           });
           setShowResumed(false);
         }, 175);
+        return;
       }
+
+      if (autoResultTimerRef.current) {
+        clearTimeout(autoResultTimerRef.current);
+      }
+      autoResultTimerRef.current = window.setTimeout(() => {
+        autoResultTimerRef.current = null;
+        const result = scoreAnswers(next);
+        router.push(`/result/${result.code}`);
+      }, 175);
     },
-    [current.id, index, syncUrl, total],
+    [answers, current.id, index, router, syncUrl, total],
   );
 
   const handleRestart = React.useCallback(() => {
@@ -178,6 +197,7 @@ export function TestRunner({ locale }: Props) {
           currentIndex={index + 1}
           dimensionMap={dimensionMap}
           answered={answeredFlags}
+          onSeekQuestion={goTo}
         />
       </div>
 
