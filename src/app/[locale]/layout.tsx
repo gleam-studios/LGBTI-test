@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head";
 import Script from "next/script";
 import { Inter, Noto_Sans_SC, Noto_Serif_SC, Playfair_Display } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -13,13 +12,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { Analytics } from "@/components/analytics";
 import { cn, SITE_URL } from "@/lib/utils";
 
-/** 与 AdSense 后台一致；全站注入一次，用于「验证站点所有权」+ 结果页广告单元 */
-const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
-
-// 可选：广告位 ID（若未设置则仅加载验证脚本）
-const ADSENSE_SLOT_MID = process.env.NEXT_PUBLIC_ADSENSE_SLOT_MID;
-const ADSENSE_SLOT_RESULT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_RESULT;
-
+/**
+ * AdSense 发布商 ID（公开）。优先读环境变量；未设置时与后台 HTML meta 默认值一致，便于 meta 验证。
+ */
+const ADSENSE_PUB =
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim() || "ca-pub-7248894390538261";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -82,6 +79,10 @@ export async function generateMetadata({
       title: t("title"),
       description: t("description"),
     },
+    /** Google AdSense：HTML meta 连接网站（与后台「HTML 标签」方式一致） */
+    other: {
+      "google-adsense-account": ADSENSE_PUB,
+    },
   };
 }
 
@@ -108,19 +109,13 @@ export default async function LocaleLayout({
         "h-full",
       )}
     >
-<Head>
-          {/* Google site verification – replace CONTENT with actual verification code */}
-          <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
-        </Head>
-        {ADSENSE_CLIENT ? (
-          <Script
-            id="adsense-global"
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-            crossOrigin="anonymous"
-            strategy="beforeInteractive"
-          />
-        ) : null}
+      <Script
+        id="adsense-global"
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB}`}
+        crossOrigin="anonymous"
+        strategy="beforeInteractive"
+      />
       <body className="min-h-full antialiased">
         <a
           href="#main"
