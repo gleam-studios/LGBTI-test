@@ -7,8 +7,8 @@ import {
   Camera,
   Check,
   Coffee,
-  Copy,
   Download,
+  Loader2,
   MessageCircle,
   Send,
   Share2,
@@ -20,7 +20,7 @@ interface Props {
   locale: string;
   shareUrl: string;
   /**
-   * hero：人格卡片下载 + 下方横向彩虹图标（分享/复制、X、Telegram、Instagram）。
+   * hero：Ko-fi + 彩虹图标行（保存图片、X、Telegram、Instagram）。
    * default：横向胶囊换行，用于全宽区。
    */
   variant?: "default" | "hero";
@@ -40,7 +40,6 @@ export function ShareSheet({
   const t = useTranslations("result.share");
   const tResult = useTranslations("result");
   const rainbowId = `re-rainbow-${React.useId().replace(/[:]/g, "")}`;
-  const [copied, setCopied] = React.useState(false);
   const [downloadState, setDownloadState] = React.useState<DownloadState>("idle");
 
   const filename = `rainbow-elevator-${code}-${locale}.png`;
@@ -53,8 +52,6 @@ export function ShareSheet({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(`${caption} ${shareUrl}`);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500);
     } catch {
       // noop
     }
@@ -294,11 +291,11 @@ export function ShareSheet({
           </span>
         </a>
 
-        {/* 彩虹图标行：分享/复制、X、Telegram、Instagram */}
+        {/* 彩虹图标行：保存结果、X、Telegram、Instagram */}
         <div
           className="flex max-w-full flex-row flex-wrap items-center justify-center gap-4 sm:gap-5"
           role="group"
-          aria-label={locale === "zh" ? "更多分享" : "More sharing"}
+          aria-label={locale === "zh" ? "保存与分享" : "Save and share"}
         >
           <svg
             className="pointer-events-none fixed h-0 w-0"
@@ -326,24 +323,25 @@ export function ShareSheet({
 
           <button
             type="button"
-            onClick={copy}
+            onClick={downloadPoster}
+            disabled={isDlLoading}
+            aria-busy={isDlLoading}
             className={iconHit}
             aria-label={
-              copied
-                ? t("copied")
-                : locale === "zh"
-                  ? "分享"
-                  : "Share"
+              isDlLoading
+                ? t("downloadImageLoading")
+                : downloadState === "ok"
+                  ? t("downloadImageSuccess")
+                  : t("downloadImage")
             }
-            title={
-              copied
-                ? t("copied")
-                : locale === "zh"
-                  ? "分享（复制链接）"
-                  : "Share (copy link)"
-            }
+            title={t("downloadImage")}
           >
-            {copied ? (
+            {isDlLoading ? (
+              <Loader2
+                className="h-5 w-5 animate-spin text-[color:var(--accent-strong)]"
+                aria-hidden
+              />
+            ) : downloadState === "ok" ? (
               <Check
                 className="h-5 w-5"
                 stroke={rainbowRef}
@@ -352,7 +350,7 @@ export function ShareSheet({
                 aria-hidden
               />
             ) : (
-              <Share2
+              <Download
                 className="h-5 w-5"
                 stroke={rainbowRef}
                 fill="none"
@@ -422,22 +420,6 @@ export function ShareSheet({
           </button>
         </div>
 
-        {/* 保存结果：独立按钮，在分享图标下方 */}
-        <button
-          type="button"
-          onClick={downloadPoster}
-          disabled={isDlLoading}
-          aria-busy={isDlLoading}
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-dashed border-[color:var(--line)] bg-[color:var(--panel)]/40 px-5 py-2.5 text-[12.5px] font-medium text-[color:var(--accent-strong)] transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--panel)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
-        >
-          <Download className="h-4 w-4 shrink-0" aria-hidden />
-          {isDlLoading
-            ? t("downloadImageLoading")
-            : downloadState === "ok"
-              ? t("downloadImageSuccess")
-              : t("downloadImage")}
-        </button>
-
         {showDlError ? (
           <p
             className="mt-0 flex max-w-[18rem] items-start gap-1.5 text-center text-[11px] italic leading-snug text-[color:var(--text-muted)]"
@@ -466,13 +448,22 @@ export function ShareSheet({
           {locale === "zh" ? "一键分享" : "Share"}
         </button>
 
-        <button type="button" onClick={copy} className={baseBtn}>
-          {copied ? (
-            <Check className="h-3.5 w-3.5 text-[color:var(--accent-strong)]" />
+        <button
+          type="button"
+          onClick={downloadPoster}
+          disabled={isDlLoading}
+          aria-busy={isDlLoading}
+          className={`${baseBtn} min-w-[2.75rem] px-3`}
+          aria-label={t("downloadImage")}
+          title={t("downloadImage")}
+        >
+          {isDlLoading ? (
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[color:var(--accent-strong)]" aria-hidden />
+          ) : downloadState === "ok" ? (
+            <Check className="h-4 w-4 shrink-0 text-[color:var(--accent-strong)]" aria-hidden />
           ) : (
-            <Copy className="h-3.5 w-3.5" />
+            <Download className="h-4 w-4 shrink-0" aria-hidden />
           )}
-          {copied ? t("copied") : t("copy")}
         </button>
 
         <a
@@ -504,23 +495,6 @@ export function ShareSheet({
           <Coffee className="h-3.5 w-3.5 text-[color:var(--accent-strong)]" aria-hidden />
           {tResult("kofi")}
         </a>
-      </div>
-
-      <div className="mt-3 flex w-full flex-col items-stretch gap-2 sm:items-center">
-        <button
-          type="button"
-          onClick={downloadPoster}
-          disabled={isDlLoading}
-          aria-busy={isDlLoading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-dashed border-[color:var(--line)] bg-[color:var(--panel)]/40 px-4 py-2.5 text-[12.5px] font-medium text-[color:var(--accent-strong)] transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--panel)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)] sm:w-auto sm:min-w-[12rem]"
-        >
-          <Download className="h-4 w-4 shrink-0" aria-hidden />
-          {isDlLoading
-            ? t("downloadImageLoading")
-            : downloadState === "ok"
-              ? t("downloadImageSuccess")
-              : t("downloadImage")}
-        </button>
       </div>
 
       {showDlError ? (
