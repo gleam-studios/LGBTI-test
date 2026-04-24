@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Script from "next/script";
 import { useTranslations } from "next-intl";
 
 declare global {
@@ -27,6 +26,34 @@ export function ResultBottomAd() {
   const hasAdsense = Boolean(AD_CLIENT && AD_SLOT_RESULT);
   const showDevPlaceholder =
     !hasAdsense && process.env.NODE_ENV === "development";
+
+  /** 广告脚本由 `layout.tsx` 全站只加载一次；此处等待就绪后再 push 单元 */
+  React.useEffect(() => {
+    if (!hasAdsense) return;
+    if (typeof window === "undefined") return;
+    if (window.adsbygoogle) {
+      setScriptReady(true);
+      return;
+    }
+    const el = document.getElementById("adsense-global") as HTMLScriptElement | null;
+    const onLoad = () => setScriptReady(true);
+    if (el) {
+      el.addEventListener("load", onLoad, { once: true });
+      if (el.complete) setScriptReady(true);
+      return () => el.removeEventListener("load", onLoad);
+    }
+    const t = window.setInterval(() => {
+      if (window.adsbygoogle) {
+        setScriptReady(true);
+        window.clearInterval(t);
+      }
+    }, 80);
+    const stop = window.setTimeout(() => window.clearInterval(t), 12_000);
+    return () => {
+      window.clearInterval(t);
+      window.clearTimeout(stop);
+    };
+  }, [hasAdsense]);
 
   React.useEffect(() => {
     if (!hasAdsense || !scriptReady || !insRef.current || pushed) return;
@@ -57,25 +84,15 @@ export function ResultBottomAd() {
 
       <div className="mt-4 w-full min-w-0">
         {hasAdsense ? (
-          <>
-            <Script
-              id="adsense-js"
-              async
-              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}`}
-              crossOrigin="anonymous"
-              strategy="afterInteractive"
-              onLoad={() => setScriptReady(true)}
-            />
-            <ins
-              ref={insRef}
-              className="adsbygoogle block w-full min-h-[100px] overflow-hidden"
-              style={{ display: "block" }}
-              data-ad-client={AD_CLIENT}
-              data-ad-slot={AD_SLOT_RESULT!}
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            />
-          </>
+          <ins
+            ref={insRef}
+            className="adsbygoogle block w-full min-h-[100px] overflow-hidden"
+            style={{ display: "block" }}
+            data-ad-client={AD_CLIENT}
+            data-ad-slot={AD_SLOT_RESULT!}
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          />
         ) : (
           <div
             className="flex min-h-[120px] w-full max-w-3xl flex-col items-center justify-center gap-1 rounded-[var(--radius-md)] border border-dashed border-[color:var(--line)]/80 bg-[color:var(--bg-soft)]/50 px-4 py-6 text-center"

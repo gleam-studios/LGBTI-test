@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Noto_Sans_SC, Noto_Serif_SC, Playfair_Display } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -10,6 +11,9 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Analytics } from "@/components/analytics";
 import { cn, SITE_URL } from "@/lib/utils";
+
+/** 与 AdSense 后台一致；全站注入一次，用于「验证站点所有权」+ 结果页广告单元 */
+const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -98,6 +102,15 @@ export default async function LocaleLayout({
         "h-full",
       )}
     >
+      {ADSENSE_CLIENT ? (
+        <Script
+          id="adsense-global"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+      ) : null}
       <body className="min-h-full antialiased">
         <a
           href="#main"
