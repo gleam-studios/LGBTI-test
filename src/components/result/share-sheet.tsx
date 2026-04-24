@@ -6,7 +6,9 @@ import {
   AlertCircle,
   Camera,
   Check,
+  Coffee,
   Copy,
+  Download,
   MessageCircle,
   Send,
   Share2,
@@ -26,6 +28,8 @@ interface Props {
 
 type DownloadState = "idle" | "loading" | "ok" | "err";
 
+const KOFI_URL = "https://ko-fi.com/lgbtitest";
+
 export function ShareSheet({
   code,
   title,
@@ -34,6 +38,7 @@ export function ShareSheet({
   variant = "default",
 }: Props) {
   const t = useTranslations("result.share");
+  const tResult = useTranslations("result");
   const rainbowId = `re-rainbow-${React.useId().replace(/[:]/g, "")}`;
   const [copied, setCopied] = React.useState(false);
   const [downloadState, setDownloadState] = React.useState<DownloadState>("idle");
@@ -264,13 +269,12 @@ export function ShareSheet({
       "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-0 bg-transparent p-0 shadow-none transition duration-200 hover:scale-110 active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)]";
     return (
       <div className="flex w-full min-h-[200px] flex-col items-center justify-center gap-4 sm:min-h-[240px] sm:gap-5 lg:min-h-0">
-        {/* 人格卡片：主 CTA */}
-        <button
-          type="button"
-          onClick={downloadPoster}
-          disabled={isDlLoading}
-          aria-busy={isDlLoading}
-          className="group relative inline-flex rounded-full p-[1.5px] transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)] disabled:cursor-wait disabled:opacity-70"
+        {/* 主 CTA：Ko-fi 小费 */}
+        <a
+          href={KOFI_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative inline-flex rounded-full p-[1.5px] transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)]"
           style={{
             backgroundImage:
               "linear-gradient(120deg, var(--r1), var(--r2), var(--r4), var(--r5), var(--r6))",
@@ -284,16 +288,13 @@ export function ShareSheet({
                 "linear-gradient(120deg, var(--r1), var(--r4), var(--r6))",
             }}
           />
-          <span className="relative inline-flex items-center justify-center rounded-full bg-[color:var(--panel)] px-5 py-2.5 text-[13px] font-semibold tracking-wide text-[color:var(--text)] shadow-[var(--shadow-card)] transition-shadow duration-300 group-hover:shadow-[var(--shadow-float)]">
-            {isDlLoading
-              ? t("downloadImageLoading")
-              : downloadState === "ok"
-                ? t("downloadImageSuccess")
-                : t("downloadImage")}
+          <span className="relative inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--panel)] px-5 py-2.5 text-[13px] font-semibold tracking-wide text-[color:var(--text)] shadow-[var(--shadow-card)] transition-shadow duration-300 group-hover:shadow-[var(--shadow-float)]">
+            <Coffee className="h-4 w-4 shrink-0 text-[color:var(--accent-strong)]" aria-hidden />
+            {tResult("kofi")}
           </span>
-        </button>
+        </a>
 
-        {/* 下载下方：纯彩虹图标，横向（分享/复制、X、Telegram、Instagram） */}
+        {/* 彩虹图标行：分享/复制、X、Telegram、Instagram */}
         <div
           className="flex max-w-full flex-row flex-wrap items-center justify-center gap-4 sm:gap-5"
           role="group"
@@ -421,9 +422,25 @@ export function ShareSheet({
           </button>
         </div>
 
+        {/* 保存结果：独立按钮，在分享图标下方 */}
+        <button
+          type="button"
+          onClick={downloadPoster}
+          disabled={isDlLoading}
+          aria-busy={isDlLoading}
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-dashed border-[color:var(--line)] bg-[color:var(--panel)]/40 px-5 py-2.5 text-[12.5px] font-medium text-[color:var(--accent-strong)] transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--panel)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
+        >
+          <Download className="h-4 w-4 shrink-0" aria-hidden />
+          {isDlLoading
+            ? t("downloadImageLoading")
+            : downloadState === "ok"
+              ? t("downloadImageSuccess")
+              : t("downloadImage")}
+        </button>
+
         {showDlError ? (
           <p
-            className="mt-2 flex items-start gap-1.5 text-[11px] italic text-[color:var(--text-muted)]"
+            className="mt-0 flex max-w-[18rem] items-start gap-1.5 text-center text-[11px] italic leading-snug text-[color:var(--text-muted)]"
             role="status"
           >
             <AlertCircle
@@ -483,13 +500,21 @@ export function ShareSheet({
           {t("telegram")}
         </a>
 
+        <a href={KOFI_URL} target="_blank" rel="noopener noreferrer" className={baseBtn}>
+          <Coffee className="h-3.5 w-3.5 text-[color:var(--accent-strong)]" aria-hidden />
+          {tResult("kofi")}
+        </a>
+      </div>
+
+      <div className="mt-3 flex w-full flex-col items-stretch gap-2 sm:items-center">
         <button
           type="button"
           onClick={downloadPoster}
           disabled={isDlLoading}
           aria-busy={isDlLoading}
-          className="group inline-flex items-center justify-center gap-2 rounded-full border border-dashed border-[color:var(--line)] bg-transparent px-3.5 py-2 text-[12.5px] font-medium text-[color:var(--accent-strong)] transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:border-[color:var(--accent)]/60 hover:bg-[color:var(--panel)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-dashed border-[color:var(--line)] bg-[color:var(--panel)]/40 px-4 py-2.5 text-[12.5px] font-medium text-[color:var(--accent-strong)] transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--panel)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)] sm:w-auto sm:min-w-[12rem]"
         >
+          <Download className="h-4 w-4 shrink-0" aria-hidden />
           {isDlLoading
             ? t("downloadImageLoading")
             : downloadState === "ok"
