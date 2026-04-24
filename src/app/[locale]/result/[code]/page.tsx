@@ -10,6 +10,7 @@ import { NeighborTypes } from "@/components/result/neighbor-types";
 import { Reveal } from "@/components/result/reveal";
 import { ShareSheet } from "@/components/result/share-sheet";
 import { ResultBottomAd } from "@/components/ads/result-bottom-ad";
+import { ResultMidAd } from "@/components/ads/result-mid-ad";
 import { JsonLd } from "@/components/seo/json-ld";
 import { DIMENSIONS } from "@/lib/dimensions";
 import { TYPES, TYPE_CODES, isTypeCode } from "@/lib/types";
@@ -205,6 +206,10 @@ export default async function ResultPage({
           {desc}
         </p>
       </section>
+
+      <div data-html2img-ignore>
+        <ResultMidAd />
+      </div>
 
       {/* 3. 四维度分析 | 与你最接近 — 同一起始线并排 */}
       <div className="mt-8 grid gap-8 border-t border-[color:var(--line)]/60 pt-8 sm:mt-9 sm:gap-9 sm:pt-9 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-8 xl:grid-cols-[minmax(0,1fr)_25rem]">
