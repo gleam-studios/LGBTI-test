@@ -14,8 +14,8 @@ export async function TypeHero({
 }) {
   const t = await getTranslations({ locale, namespace: "result" });
   const name = locale === "zh" ? persona.cn : persona.en;
-  /** 中文页只保留主标题（避免副行出现英文类型名）；英文页副行显示中文原名，与主标题英文对照 */
-  const alternateName = locale === "zh" ? null : persona.cn;
+  /** 双语副标题：与主标题相反语言，和最初设计一致（zh 主中副英 / en 主英副中） */
+  const subName = locale === "zh" ? persona.en : persona.cn;
   const moto = locale === "zh" ? persona.moto.zh : persona.moto.en;
   const tags = locale === "zh" ? persona.tags.zh : persona.tags.en;
 
@@ -88,11 +88,9 @@ export async function TypeHero({
           >
             {name}
           </h1>
-          {alternateName ? (
-            <p className="font-display mt-2 text-[17px] italic text-[color:var(--text-muted)] sm:text-[19px]">
-              {alternateName}
-            </p>
-          ) : null}
+          <p className="font-display mt-2 text-[17px] italic text-[color:var(--text-muted)] sm:text-[19px]">
+            {subName}
+          </p>
 
           <ul className="mt-4 flex flex-wrap justify-center gap-1.5 sm:justify-start">
             {tags.map((tag) => (
