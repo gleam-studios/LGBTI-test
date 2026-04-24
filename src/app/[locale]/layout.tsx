@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import Script from "next/script";
 import { Inter, Noto_Sans_SC, Noto_Serif_SC, Playfair_Display } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -107,15 +108,19 @@ export default async function LocaleLayout({
         "h-full",
       )}
     >
-      {ADSENSE_CLIENT ? (
-        <Script
-          id="adsense-global"
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-          crossOrigin="anonymous"
-          strategy="beforeInteractive"
-        />
-      ) : null}
+<Head>
+          {/* Google site verification – replace CONTENT with actual verification code */}
+          <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
+        </Head>
+        {ADSENSE_CLIENT ? (
+          <Script
+            id="adsense-global"
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+          />
+        ) : null}
       <body className="min-h-full antialiased">
         <a
           href="#main"
