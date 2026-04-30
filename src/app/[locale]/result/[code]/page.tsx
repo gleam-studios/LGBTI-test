@@ -8,6 +8,7 @@ import { TypeHero } from "@/components/result/type-hero";
 import { DimensionBar } from "@/components/result/dimension-bar";
 import { NeighborTypes } from "@/components/result/neighbor-types";
 import { Reveal } from "@/components/result/reveal";
+import { ResultAnalytics } from "@/components/result/result-analytics";
 import { ShareSheet } from "@/components/result/share-sheet";
 import { ResultBottomAd } from "@/components/ads/result-bottom-ad";
 import { ResultMidAd } from "@/components/ads/result-mid-ad";
@@ -162,6 +163,7 @@ export default async function ResultPage({
   return (
     <div className="mx-auto w-full max-w-[1400px] px-6 py-5 sm:px-10 sm:py-7 lg:px-16">
       <JsonLd data={jsonLd} />
+      <ResultAnalytics code={code} locale={locale} />
 
       <nav className="text-xs">
         <Link

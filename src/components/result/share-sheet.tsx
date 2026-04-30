@@ -9,10 +9,9 @@ import {
   Coffee,
   Download,
   Loader2,
-  MessageCircle,
-  Send,
   Share2,
 } from "lucide-react";
+import { track } from "@/components/analytics";
 
 interface Props {
   code: string;
@@ -20,7 +19,7 @@ interface Props {
   locale: string;
   shareUrl: string;
   /**
-   * hero：Ko-fi + 彩虹图标行（保存图片、X、Telegram、Instagram）。
+   * hero：Ko-fi + 彩虹图标行（保存图片、X、Discord、Instagram）。
    * default：横向胶囊换行，用于全宽区。
    */
   variant?: "default" | "hero";
@@ -29,6 +28,9 @@ interface Props {
 type DownloadState = "idle" | "loading" | "ok" | "err";
 
 const KOFI_URL = "https://ko-fi.com/lgbtitest";
+const INSTAGRAM_URL = "https://www.instagram.com/slowlovecampus/";
+const X_PROFILE_URL = "https://x.com/PrideStoryLab";
+const DISCORD_URL = "https://discord.gg/2HYRPHPu";
 
 /**
  * Lucide `Download` 是 3 条独立 path；对每条分别 `stroke=url(#渐变)` 时，`objectBoundingBox`
@@ -44,6 +46,34 @@ function RainbowDownloadStroke({ gradientId }: { gradientId: string }) {
         strokeLinejoin="round"
         d="M12 15V3 M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5"
       />
+    </svg>
+  );
+}
+
+function DiscordIcon({
+  className,
+  stroke,
+}: {
+  className?: string;
+  stroke?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke={stroke ?? "currentColor"}
+      strokeWidth={1.85}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M9.1 5.1 8.8 4a13.8 13.8 0 0 0-4.5 2.1c-1.7 2.6-2.8 6.6-3 11.2A7.3 7.3 0 0 0 7.2 20l1.5-2.4" />
+      <path d="M14.9 5.1 15.2 4a13.8 13.8 0 0 1 4.5 2.1c1.7 2.6 2.8 6.6 3 11.2A7.3 7.3 0 0 1 16.8 20l-1.5-2.4" />
+      <path d="M5.8 7.8a13.1 13.1 0 0 1 12.4 0" />
+      <circle cx="9.2" cy="12.4" r="1.45" />
+      <circle cx="14.8" cy="12.4" r="1.45" />
+      <path d="M5.8 15.3a11.4 11.4 0 0 0 12.4 0" />
     </svg>
   );
 }
@@ -75,10 +105,8 @@ export function ShareSheet({
     }
   };
 
-  const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}&url=${encodeURIComponent(shareUrl)}`;
-  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(caption)}`;
-
   const shareNative = async () => {
+    trackShare("native");
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await (navigator as Navigator).share({
@@ -90,8 +118,18 @@ export function ShareSheet({
         // user cancelled
       }
     } else {
+      trackShare("copy_fallback");
       copy();
     }
+  };
+
+  const trackShare = (platform: string) => {
+    track("share_click", {
+      platform,
+      result_code: code,
+      locale,
+      share_variant: variant,
+    });
   };
 
   const resolveCssVar = (name: string, fallback: string) => {
@@ -251,9 +289,20 @@ export function ShareSheet({
   };
 
   const downloadPoster = async () => {
+    track("result_image_download_click", {
+      result_code: code,
+      locale,
+      share_variant: variant,
+    });
     setDownloadState("loading");
     try {
       await downloadPageAsImage();
+      track("result_image_download_success", {
+        method: "html_to_image",
+        result_code: code,
+        locale,
+        share_variant: variant,
+      });
       setDownloadState("ok");
       window.setTimeout(() => setDownloadState("idle"), 2_000);
       return;
@@ -263,6 +312,12 @@ export function ShareSheet({
 
     const apiPath = `/api/og/${code}?lang=${encodeURIComponent(locale)}`;
     const fallbackUrl = `${apiPath}&download=1`;
+    track("result_image_download_fallback", {
+      method: "og_image",
+      result_code: code,
+      locale,
+      share_variant: variant,
+    });
     try {
       window.open(fallbackUrl, "_blank", "noopener,noreferrer");
     } catch {
@@ -289,6 +344,14 @@ export function ShareSheet({
           href={KOFI_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            track("support_click", {
+              target: "kofi",
+              result_code: code,
+              locale,
+              share_variant: variant,
+            })
+          }
           className="group relative inline-flex rounded-full p-[1.5px] transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--accent)]"
           style={{
             backgroundImage:
@@ -309,7 +372,7 @@ export function ShareSheet({
           </span>
         </a>
 
-        {/* 彩虹图标行：保存结果、X、Telegram、Instagram */}
+        {/* 彩虹图标行：保存结果、X、Discord、Instagram */}
         <div
           className="flex max-w-full flex-row flex-wrap items-center justify-center gap-4 sm:gap-5"
           role="group"
@@ -373,9 +436,10 @@ export function ShareSheet({
           </button>
 
           <a
-            href={xUrl}
+            href={X_PROFILE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackShare("x")}
             className={iconHit}
             aria-label={t("x")}
             title={t("x")}
@@ -391,36 +455,28 @@ export function ShareSheet({
           </a>
 
           <a
-            href={telegramUrl}
+            href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackShare("discord")}
             className={iconHit}
-            aria-label={t("telegram")}
-            title={t("telegram")}
+            aria-label={t("discord")}
+            title={t("discord")}
           >
-            <Send
+            <DiscordIcon
               className="h-5 w-5"
               stroke={rainbowRef}
-              fill="none"
-              strokeWidth={2.25}
-              aria-hidden
             />
           </a>
 
-          <button
-            type="button"
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackShare("instagram")}
             className={iconHit}
             aria-label={t("instagram")}
-            title={t("instagramHint")}
-            onClick={async () => {
-              await copy();
-              if (typeof window === "undefined") return;
-              window.open(
-                "https://www.instagram.com/",
-                "_blank",
-                "noopener,noreferrer",
-              );
-            }}
+            title={t("instagram")}
           >
             <Camera
               className="h-5 w-5"
@@ -429,7 +485,7 @@ export function ShareSheet({
               strokeWidth={2.25}
               aria-hidden
             />
-          </button>
+          </a>
         </div>
 
         {showDlError ? (
@@ -479,9 +535,10 @@ export function ShareSheet({
         </button>
 
         <a
-          href={xUrl}
+          href={X_PROFILE_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackShare("x")}
           className={baseBtn}
         >
           <span
@@ -494,16 +551,41 @@ export function ShareSheet({
         </a>
 
         <a
-          href={telegramUrl}
+          href={DISCORD_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackShare("discord")}
           className={baseBtn}
         >
-          <MessageCircle className="h-3.5 w-3.5" />
-          {t("telegram")}
+          <DiscordIcon className="h-3.5 w-3.5" />
+          {t("discord")}
         </a>
 
-        <a href={KOFI_URL} target="_blank" rel="noopener noreferrer" className={baseBtn}>
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackShare("instagram")}
+          className={baseBtn}
+        >
+          <Camera className="h-3.5 w-3.5" />
+          {t("instagram")}
+        </a>
+
+        <a
+          href={KOFI_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() =>
+            track("support_click", {
+              target: "kofi",
+              result_code: code,
+              locale,
+              share_variant: variant,
+            })
+          }
+          className={baseBtn}
+        >
           <Coffee className="h-3.5 w-3.5 text-[color:var(--accent-strong)]" aria-hidden />
           {tResult("kofi")}
         </a>

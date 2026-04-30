@@ -38,8 +38,10 @@ export function Analytics({ gaMeasurementId }: AnalyticsProps) {
 export function track(event: string, props?: Record<string, unknown>) {
   try {
     if (typeof window === "undefined") return;
-    if (!POSTHOG_KEY || !posthog.__loaded) return;
-    posthog.capture(event, props);
+    window.gtag?.("event", event, props ?? {});
+    if (POSTHOG_KEY && posthog.__loaded) {
+      posthog.capture(event, props);
+    }
   } catch {
     // best-effort
   }

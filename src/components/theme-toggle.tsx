@@ -9,7 +9,9 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const t = useTranslations("nav");
   const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  React.useEffect(() => {
+    queueMicrotask(() => setMounted(true));
+  }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
 

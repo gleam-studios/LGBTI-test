@@ -4,6 +4,7 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ArrowRight, Check, RotateCcw } from "lucide-react";
+import { track } from "@/components/analytics";
 import { useRouter } from "@/i18n/navigation";
 import { QUESTIONS } from "@/lib/questions";
 import type { Dimension } from "@/lib/dimensions";
@@ -48,6 +49,9 @@ export function TestRunner({ locale }: Props) {
   const [index, setIndex] = React.useState(0);
   const [direction, setDirection] = React.useState<1 | -1>(1);
   const [showResumed, setShowResumed] = React.useState(false);
+  const startedRef = React.useRef(false);
+  const completedRef = React.useRef(false);
+  const lastQuestionViewRef = React.useRef("");
   /** 浏览器下 setTimeout 返回 number；与 Node 的 Timeout 类型区分 */
   const autoResultTimerRef = React.useRef<number | null>(null);
 
@@ -75,20 +79,24 @@ export function TestRunner({ locale }: Props) {
         "",
         `${url.pathname}${q ? `?${q}` : ""}${url.hash}`,
       );
-      setAnswers({});
-      setIndex(0);
-      setDirection(1);
-      setShowResumed(false);
+      queueMicrotask(() => {
+        setAnswers({});
+        setIndex(0);
+        setDirection(1);
+        setShowResumed(false);
+      });
       return;
     }
 
     const initial = readInitialAnswers();
     const hasAny = Object.keys(initial).length > 0;
     if (hasAny) {
-      setAnswers(initial);
-      const nextUnanswered = QUESTIONS.findIndex((q) => !(q.id in initial));
-      setIndex(nextUnanswered === -1 ? QUESTIONS.length - 1 : nextUnanswered);
-      setShowResumed(true);
+      queueMicrotask(() => {
+        setAnswers(initial);
+        const nextUnanswered = QUESTIONS.findIndex((q) => !(q.id in initial));
+        setIndex(nextUnanswered === -1 ? QUESTIONS.length - 1 : nextUnanswered);
+        setShowResumed(true);
+      });
     }
   }, []);
 
@@ -101,6 +109,24 @@ export function TestRunner({ locale }: Props) {
   );
   const answeredCount = answeredFlags.filter(Boolean).length;
   const allAnswered = answeredCount === total;
+
+  React.useEffect(() => {
+    if (!startedRef.current) {
+      startedRef.current = true;
+      track("test_start", { locale, total_questions: total });
+    }
+    const viewKey = `${index}:${current.id}`;
+    if (lastQuestionViewRef.current === viewKey) return;
+    lastQuestionViewRef.current = viewKey;
+    track("question_view", {
+      locale,
+      question_index: index + 1,
+      question_id: current.id,
+      dimension: current.dim,
+      answered_count: answeredCount,
+      total_questions: total,
+    });
+  }, [answeredCount, current.dim, current.id, index, locale, total]);
 
   // Sync answers to URL query (?a=...) and localStorage.
   const syncUrl = React.useCallback(
@@ -131,6 +157,15 @@ export function TestRunner({ locale }: Props) {
       const next = { ...answers, [current.id]: value };
       setAnswers(next);
       syncUrl(next);
+      const nextAnsweredCount = Object.keys(next).length;
+      track("question_answered", {
+        locale,
+        question_index: index + 1,
+        question_id: current.id,
+        dimension: current.dim,
+        answered_count: nextAnsweredCount,
+        total_questions: total,
+      });
 
       const isLast = index >= total - 1;
       if (!isLast) {
@@ -151,13 +186,24 @@ export function TestRunner({ locale }: Props) {
       autoResultTimerRef.current = window.setTimeout(() => {
         autoResultTimerRef.current = null;
         const result = scoreAnswers(next);
+        if (!completedRef.current) {
+          completedRef.current = true;
+          track("test_complete", {
+            locale,
+            result_code: result.code,
+            answered_count: result.answeredQuestions,
+            total_questions: result.totalQuestions,
+          });
+        }
         router.push(`/result/${result.code}`);
       }, 175);
     },
-    [answers, current.id, index, router, syncUrl, total],
+    [answers, current.dim, current.id, index, locale, router, syncUrl, total],
   );
 
   const handleRestart = React.useCallback(() => {
+    completedRef.current = false;
+    lastQuestionViewRef.current = "";
     setAnswers({});
     syncUrl({});
     setIndex(0);
@@ -167,8 +213,17 @@ export function TestRunner({ locale }: Props) {
 
   const handleSubmit = React.useCallback(() => {
     const result = scoreAnswers(answers);
+    if (!completedRef.current) {
+      completedRef.current = true;
+      track("test_complete", {
+        locale,
+        result_code: result.code,
+        answered_count: result.answeredQuestions,
+        total_questions: result.totalQuestions,
+      });
+    }
     router.push(`/result/${result.code}`);
-  }, [answers, router]);
+  }, [answers, locale, router]);
 
   // Keyboard shortcuts: 1/2/3 select, arrow keys navigate, Enter submits.
   React.useEffect(() => {

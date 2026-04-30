@@ -29,8 +29,8 @@ export function ResultAdSlot({
 }) {
   const t = useTranslations("result");
   const insRef = React.useRef<HTMLModElement>(null);
+  const pushedRef = React.useRef(false);
   const [scriptReady, setScriptReady] = React.useState(false);
-  const [pushed, setPushed] = React.useState(false);
 
   const hasAdsense = Boolean(AD_CLIENT && adSlot);
   const showDevPlaceholder =
@@ -43,7 +43,7 @@ export function ResultAdSlot({
     if (!hasAdsense) return;
     if (typeof window === "undefined") return;
     if (window.adsbygoogle) {
-      setScriptReady(true);
+      queueMicrotask(() => setScriptReady(true));
       return;
     }
     const el = document.getElementById("adsense-global") as HTMLScriptElement | null;
@@ -51,7 +51,7 @@ export function ResultAdSlot({
     if (el) {
       el.addEventListener("load", onLoad, { once: true });
       const loaded = (el as unknown as { complete?: boolean }).complete;
-      if (loaded) setScriptReady(true);
+      if (loaded) queueMicrotask(() => setScriptReady(true));
       return () => el.removeEventListener("load", onLoad);
     }
     const iv = window.setInterval(() => {
@@ -68,14 +68,14 @@ export function ResultAdSlot({
   }, [hasAdsense]);
 
   React.useEffect(() => {
-    if (!hasAdsense || !scriptReady || !insRef.current || pushed) return;
+    if (!hasAdsense || !scriptReady || !insRef.current || pushedRef.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-      setPushed(true);
+      pushedRef.current = true;
     } catch {
       // 广告脚本未就绪或屏蔽插件时静默失败
     }
-  }, [hasAdsense, scriptReady, pushed]);
+  }, [hasAdsense, scriptReady]);
 
   if (!hasAdsense && !showDevPlaceholder) {
     return null;

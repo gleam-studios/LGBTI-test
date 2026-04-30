@@ -17,7 +17,10 @@ function GaPageView({ measurementId }: { measurementId: string }) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const q = searchParams?.toString();
+    const params = new URLSearchParams(searchParams?.toString());
+    // Do not send the encoded answer payload to GA.
+    params.delete("a");
+    const q = params.toString();
     const pagePath = q ? `${pathname}?${q}` : pathname;
     window.gtag?.("config", measurementId, { page_path: pagePath });
   }, [pathname, searchParams, measurementId]);
