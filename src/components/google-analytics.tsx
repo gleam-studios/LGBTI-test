@@ -4,32 +4,41 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
+function resolveMeasurementId(fromServer?: string | null) {
+  const s = fromServer?.trim();
+  if (s) return s;
+  return process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? "";
+}
 
-function GaPageView() {
+function GaPageView({ measurementId }: { measurementId: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!GA_MEASUREMENT_ID) return;
     const q = searchParams?.toString();
     const pagePath = q ? `${pathname}?${q}` : pathname;
-    window.gtag?.("config", GA_MEASUREMENT_ID, { page_path: pagePath });
-  }, [pathname, searchParams]);
+    window.gtag?.("config", measurementId, { page_path: pagePath });
+  }, [pathname, searchParams, measurementId]);
 
   return null;
 }
 
+type GoogleAnalyticsProps = {
+  /** 服务端注入（如 Zeabur 的 `GA_MEASUREMENT_ID`），构建时不必内联 NEXT_PUBLIC */
+  measurementId?: string | null;
+};
+
 /**
- * GA4：设置 `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-xxxxxxxx` 后生效；未设置时不加载任何脚本。
+ * GA4：优先用服务端传入的 `measurementId`；否则用 `NEXT_PUBLIC_GA_MEASUREMENT_ID`（本地/构建时）。
  */
-export function GoogleAnalytics() {
-  if (!GA_MEASUREMENT_ID) return null;
+export function GoogleAnalytics({ measurementId: measurementIdProp }: GoogleAnalyticsProps) {
+  const measurementId = resolveMeasurementId(measurementIdProp);
+  if (!measurementId) return null;
 
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
         strategy="afterInteractive"
       />
       <Script id="ga4-init" strategy="afterInteractive">
@@ -37,11 +46,11 @@ export function GoogleAnalytics() {
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false });
+gtag('config', '${measurementId}', { send_page_view: false });
         `}
       </Script>
       <Suspense fallback={null}>
-        <GaPageView />
+        <GaPageView measurementId={measurementId} />
       </Suspense>
     </>
   );

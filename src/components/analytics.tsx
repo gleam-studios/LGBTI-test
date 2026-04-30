@@ -5,11 +5,16 @@ import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import posthog from "posthog-js";
 import { GoogleAnalytics } from "@/components/google-analytics";
 
+type AnalyticsProps = {
+  /** 来自服务端 `GA_MEASUREMENT_ID` / `NEXT_PUBLIC_GA_MEASUREMENT_ID`，便于 Zeabur 仅配运行时变量 */
+  gaMeasurementId?: string;
+};
+
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST =
   process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 
-export function Analytics() {
+export function Analytics({ gaMeasurementId }: AnalyticsProps) {
   React.useEffect(() => {
     if (!POSTHOG_KEY) return;
     if (typeof window === "undefined") return;
@@ -24,7 +29,7 @@ export function Analytics() {
   }, []);
   return (
     <>
-      <GoogleAnalytics />
+      <GoogleAnalytics measurementId={gaMeasurementId} />
       <VercelAnalytics />
     </>
   );

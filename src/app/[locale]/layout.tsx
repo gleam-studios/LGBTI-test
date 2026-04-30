@@ -97,6 +97,11 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  const gaMeasurementId =
+    process.env.GA_MEASUREMENT_ID?.trim() ||
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ||
+    "";
+
   return (
     <html
       lang={locale === "zh" ? "zh-CN" : "en"}
@@ -138,7 +143,7 @@ export default async function LocaleLayout({
             </div>
           </NextIntlClientProvider>
         </ThemeProvider>
-        <Analytics />
+        <Analytics gaMeasurementId={gaMeasurementId || undefined} />
       </body>
     </html>
   );
