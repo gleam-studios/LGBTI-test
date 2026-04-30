@@ -4,7 +4,7 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
-const DEFAULT_MEASUREMENT_ID = "G-7SG0K6MZ0S";
+const DEFAULT_MEASUREMENT_ID = "G-TDE5JR3NPV";
 
 function resolveMeasurementId(fromServer?: string | null) {
   const s = fromServer?.trim();
