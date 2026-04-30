@@ -42,8 +42,8 @@ export default async function PrivacyPage({
           </h2>
           <p className="mt-2 text-[color:var(--text-muted)]">
             {isZh
-              ? "如果环境变量配置了 PostHog 与 Vercel Analytics，我们会采集匿名访问数据，以便理解测试的完成率、哪些题导致跳出、分享行为等聚合指标。我们不会识别个人身份；没有配置 Key 时不发送任何数据。"
-              : "If PostHog and Vercel Analytics env keys are present, we collect anonymous usage metrics — completion rates, drop-off points, share interactions. No personal identification. Without keys, nothing is sent."}
+              ? "如果环境变量配置了 Google Analytics（GA4）、PostHog 或 Vercel Analytics，我们会采集匿名访问与页面浏览等聚合数据，以便理解测试的完成率、哪些题导致跳出、分享行为等。我们不会识别个人身份；未配置对应变量时不加载对应脚本。"
+              : "If Google Analytics (GA4), PostHog, or Vercel Analytics env keys are present, we load those tools to collect anonymous usage and page-view aggregates — completion rates, drop-off points, share interactions. No personal identification. Without the relevant env vars, those scripts are not loaded."}
           </p>
         </section>
         <section>

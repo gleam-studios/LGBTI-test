@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import posthog from "posthog-js";
+import { GoogleAnalytics } from "@/components/google-analytics";
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST =
@@ -21,7 +22,12 @@ export function Analytics() {
       autocapture: false,
     });
   }, []);
-  return <VercelAnalytics />;
+  return (
+    <>
+      <GoogleAnalytics />
+      <VercelAnalytics />
+    </>
+  );
 }
 
 export function track(event: string, props?: Record<string, unknown>) {
