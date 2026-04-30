@@ -4,10 +4,12 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
+const DEFAULT_MEASUREMENT_ID = "G-7SG0K6MZ0S";
+
 function resolveMeasurementId(fromServer?: string | null) {
   const s = fromServer?.trim();
   if (s) return s;
-  return process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? "";
+  return process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || DEFAULT_MEASUREMENT_ID;
 }
 
 function GaPageView({ measurementId }: { measurementId: string }) {
