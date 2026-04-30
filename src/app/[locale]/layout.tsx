@@ -12,6 +12,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { Analytics } from "@/components/analytics";
 import { cn, SITE_URL } from "@/lib/utils";
 
+/** 在运行时读取 `GA_MEASUREMENT_ID`（Zeabur 常见：仅容器环境变量），避免整站静态预渲染把空 ID 烤进 HTML */
+export const dynamic = "force-dynamic";
+
 /**
  * AdSense 发布商 ID（公开）。优先读环境变量；未设置时与后台 HTML meta 默认值一致，便于 meta 验证。
  */
